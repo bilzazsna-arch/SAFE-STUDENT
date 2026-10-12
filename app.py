@@ -32,10 +32,10 @@ cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Menampilkan Gambar Laut & Menghapus Kotak Putih
+# CSS Kustom: Ukuran Elemen Super Besar
 st.markdown(f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
 
     /* BACKGROUND LAUT UTAMA MEMENUHI SELURUH LAYAR */
     [data-testid="stAppViewContainer"] {{
@@ -49,6 +49,7 @@ st.markdown(f"""
     /* MENGHAPUS KOTAK/LATAR POLOS PADA KONTEN UTAMA */
     [data-testid="stHeader"], .main .block-container {{
         background: transparent !important;
+        padding-top: 0.5rem !important;
     }}
 
     /* HAPUS HIGHLIGHT/BACKGROUND PUTIH DI BELAKANG DOKUMEN DAN TEKS MARKDOWN */
@@ -61,68 +62,70 @@ st.markdown(f"""
     /* Container Header Tengah (Logo & Judul) */
     .header-center-box {{
         text-align: center;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
+        margin-top: -10px;
         background: transparent !important;
     }}
     
-    /* Logo Sekolah Rata Tengah & Ukuran Sedang */
+    /* Logo Sekolah SUPER BESAR (240px) */
     .school-logo-img {{
-        width: 100px;
+        width: 240px;
         height: auto;
         margin-bottom: 12px;
-        filter: drop-shadow(0px 6px 12px rgba(0,0,0,0.4));
-        border-radius: 12px;
+        filter: drop-shadow(0px 8px 18px rgba(0,0,0,0.5));
+        border-radius: 16px;
     }}
 
-    /* Judul Utama Rata Tengah Tanpa Latar Belakang */
+    /* Judul Utama SUPER BESAR & MEGAH (3.8rem) */
     .main-title {{
         font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
-        text-shadow: 3px 3px 14px rgba(0, 0, 0, 0.95);
-        font-weight: 700;
+        text-shadow: 4px 4px 20px rgba(0, 0, 0, 0.95);
+        font-weight: 900;
         text-align: center;
-        font-size: 2.3rem;
+        font-size: 3.8rem;
         margin: 0;
+        line-height: 1.15;
         background: transparent !important;
     }}
 
-    /* Wadah Maskot Transparan */
+    /* Wadah Maskot Transparan & Kepiting SUPER BESAR (250px) */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
         padding: 5px;
     }}
     .img-maskot-pure img {{
-        max-width: 130px;
+        max-width: 250px;
         height: auto;
-        filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.4));
+        filter: drop-shadow(0px 10px 22px rgba(0,0,0,0.5));
         transition: transform 0.3s ease;
     }}
     .img-maskot-pure img:hover {{
         transform: scale(1.08);
     }}
 
-    /* Nama Kema & Temo Tanpa Latar Belakang */
+    /* Nama Kema & Temo SUPER BESAR */
     .nama-maskot-estetik {{
         font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
         color: #FFFFFF !important;
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-top: 8px;
-        letter-spacing: 0.5px;
-        text-shadow: 2px 2px 8px rgba(3, 105, 161, 0.95), 0px 0px 10px rgba(255, 255, 255, 0.7);
+        font-size: 2rem;
+        font-weight: 800;
+        margin-top: 12px;
+        letter-spacing: 0.8px;
+        text-shadow: 3px 3px 10px rgba(3, 105, 161, 0.95), 0px 0px 12px rgba(255, 255, 255, 0.8);
         background: transparent !important;
     }}
 
-    /* Kotak Pesan Sambutan Kaca Transparan Estetik */
+    /* Kotak Pesan Sambutan Estetik */
     .speech-bubble {{
         font-family: 'Poppins', sans-serif;
-        background-color: rgba(255, 255, 255, 0.85) !important;
+        background-color: rgba(255, 255, 255, 0.88) !important;
         backdrop-filter: blur(10px);
-        padding: 20px 24px;
-        border-radius: 20px;
-        border-left: 6px solid #0284C7;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+        padding: 28px 32px;
+        border-radius: 24px;
+        border-left: 8px solid #0284C7;
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3) !important;
         color: #1E293B !important;
         text-align: center;
         font-weight: 600;
@@ -140,9 +143,9 @@ st.markdown(f"""
     .stTabs, form, [data-testid="stForm"] {{
         background-color: rgba(255, 255, 255, 0.92) !important;
         backdrop-filter: blur(12px);
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        padding: 30px;
+        border-radius: 24px;
+        box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3) !important;
     }}
     
     /* Sidebar Nuansa Laut Dalam */
@@ -161,21 +164,21 @@ st.markdown(f"""
     /* Card Dashboard BK */
     .metric-card {{
         background-color: #FFFFFF !important;
-        border-radius: 12px;
-        padding: 15px;
+        border-radius: 14px;
+        padding: 18px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
         border: 1px solid #7DD3FC;
         text-align: center;
         margin-bottom: 10px;
     }}
     .metric-value {{
-        font-size: 1.6rem;
-        font-weight: 700;
+        font-size: 1.8rem;
+        font-weight: 800;
         color: #0369A1 !important;
     }}
     .metric-label {{
         color: #475569 !important;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         font-weight: 600;
     }}
     
@@ -184,11 +187,12 @@ st.markdown(f"""
         width: 100%;
         background: linear-gradient(90deg, #0284C7 0%, #0369A1 100%);
         color: white !important;
-        border-radius: 12px;
-        padding: 12px 20px;
-        font-weight: 600;
+        border-radius: 14px;
+        padding: 14px 24px;
+        font-size: 1.1rem;
+        font-weight: 700;
         border: none;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35) !important;
+        box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4) !important;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -227,7 +231,7 @@ def analisa_nlp_ringan(teks):
 # 3. SIDEBAR NAVIGATION
 # ==========================================
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=60)
+    st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=65)
     st.markdown("### **Curhatin Digital MAN**")
     st.caption("🌊 Zona Aman Pengaduan Siswa 24 Jam")
     st.divider()
@@ -240,11 +244,11 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
 
 # ==========================================
-# 4. HALAMAN SISWA (LOGO ATAS & JUDUL TENGAH)
+# 4. HALAMAN SISWA (ELEMEN SUPER BESAR)
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Header Rata Tengah: Logo MAN 2 di Atas + Judul Utama di Bawahnya
+    # Header Rata Tengah: Logo MAN 2 Super Besar di Atas + Judul Utama Megah di Bawahnya
     logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="school-logo-img"><br>' if logo_base64 else ''
     st.markdown(f"""
         <div class="header-center-box">
@@ -253,8 +257,8 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT KEMA & TEMO BERDAMPINGAN
-    col_m1, col_text, col_m2 = st.columns([1, 2.2, 1])
+    # MASKOT KEMA & TEMO BERDAMPINGAN SUPER BESAR
+    col_m1, col_text, col_m2 = st.columns([1.5, 2.5, 1.5])
     
     with col_m1:
         if cewe_base64:
@@ -270,8 +274,8 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     with col_text:
         st.markdown("""
             <div class="speech-bubble">
-                <b style="font-size: 1.2rem; color: #0369A1 !important;">Halo Teman-teman MAN! ✨</b><br>
-                <span style="color: #334155 !important; font-size: 0.95rem;">Kami Kema & Temo adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
+                <b style="font-size: 1.4rem; color: #0369A1 !important;">Halo Teman-teman MAN! ✨</b><br><br>
+                <span style="color: #334155 !important; font-size: 1.1rem; line-height: 1.6;">Kami <b>Kema & Temo</b> adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
@@ -402,7 +406,7 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
                 file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/csv"
+                mime="text/css"
             )
             
     elif passcode != "":
