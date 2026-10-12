@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, date, time
-import hashlib
 from PIL import Image
+import os
+import base64
 
 # ==========================================
-# 1. KONFIGURASI HALAMAN & CSS BACKGROUND LAUT
+# 1. KONFIGURASI HALAMAN & CSS BACKGROUND
 # ==========================================
 st.set_page_config(
     page_title="CurhatIn - Safe Space MAN",
@@ -14,28 +15,51 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS untuk Background Laut Landscape & Tampilan Elegan
-st.markdown("""
+# Fungsi untuk membaca background laut lokal dan mengubahnya ke Base64 CSS
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+# Penerapan Background & Styling Kustom
+bg_css = ""
+if os.path.exists("bg_laut.jpg"):
+    bin_str = get_base64_of_bin_file("bg_laut.jpg")
+    bg_css = f"""
     <style>
-    /* Mengatur Background Laut Landscape dari file bg_laut.jpg */
-    .stApp {
-        background-image: url("bg_laut.jpg");
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{bin_str}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
+    }}
+    </style>
+    """
+else:
+    bg_css = """
+    <style>
+    .stApp {
+        background: linear-gradient(180deg, #E0F2FE 0%, #BAE6FD 50%, #7DD3FC 100%);
     }
-    
-    /* Lapisan transparan agar teks tetap jelas dibaca di atas background laut */
+    </style>
+    """
+
+st.markdown(bg_css, unsafe_allow_html=True)
+
+# Styling Tambahan Elegan
+st.markdown("""
+    <style>
+    /* Transparansi Wadah Utama agar Background Laut Kelihatan */
     .main .block-container {
-        background-color: rgba(255, 255, 255, 0.88);
+        background-color: rgba(255, 255, 255, 0.92);
         border-radius: 20px;
-        padding: 30px;
-        margin-top: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        padding: 25px 30px;
+        margin-top: 15px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     }
     
-    /* Sidebar Kustom */
+    /* Sidebar Nuansa Laut Dalam */
     [data-testid="stSidebar"] {
         background-color: rgba(3, 105, 161, 0.95);
         color: white;
@@ -48,23 +72,7 @@ st.markdown("""
         color: #F0F9FF !important;
     }
 
-    /* Style untuk Kotak Maskot Kembar (Cewek & Cowok) */
-    .mascot-container {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
-        border: 2px solid #38BDF8;
-        border-radius: 16px;
-        padding: 15px;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(3, 105, 161, 0.1);
-    }
-    .mascot-box {
-        text-align: center;
-    }
-    
-    /* Card Metric Dashboard BK */
+    /* Card Dashboard BK */
     .metric-card {
         background-color: #FFFFFF;
         border-radius: 12px;
@@ -152,32 +160,30 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     
     st.title("🦀 CurhatIn Digital MAN - Safe Space")
     
-    # MENAMPILKAN 2 MASKOT KEPITING BERDAMPINGAN (CEWEK & COWOK)
+    # KANAN & KIRI MASKOT KEPITING
     col_m1, col_text, col_m2 = st.columns([1, 2, 1])
     
     with col_m1:
-        try:
+        if os.path.exists("kepiting_cewe.png"):
             img_cewe = Image.open('kepiting_cewe.png')
-            st.image(img_cewe, width=120)
-            st.caption("🦀 **Kepi (Cewek)**")
-        except:
-            st.info("Upload `kepiting_cewe.png`")
+            st.image(img_cewe, width=140, caption="🦀 Kepi (Cewek)")
+        else:
+            st.warning("⚠️ File 'kepiting_cewe.png' tidak ditemukan")
             
     with col_text:
         st.markdown("""
-            <div style="background-color: #F0F9FF; padding: 15px; border-radius: 12px; border-left: 5px solid #0284C7; text-align: center;">
-                <b>Halo Teman-teman MAN! ✨</b><br>
-                Kami berdua adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊
+            <div style="background-color: #F0F9FF; padding: 18px; border-radius: 12px; border-left: 5px solid #0284C7; text-align: center; margin-top: 10px;">
+                <b style="font-size: 1.1rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
+                <span style="color: #334155;">Kami berdua adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
     with col_m2:
-        try:
+        if os.path.exists("kepiting_cowo.png"):
             img_cowo = Image.open('kepiting_cowo.png')
-            st.image(img_cowo, width=120)
-            st.caption("🦀 **Kepo (Cowok)**")
-        except:
-            st.info("Upload `kepiting_cowo.png`")
+            st.image(img_cowo, width=140, caption="🦀 Kepo (Cowok)")
+        else:
+            st.warning("⚠️ File 'kepiting_cowo.png' tidak ditemukan")
 
     st.divider()
 
