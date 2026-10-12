@@ -32,7 +32,7 @@ cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Estetika Laut, Logo 6x, Kema Digeser ke Kiri, & Radio Hitam Pekat
+# CSS Kustom: Radio Button Hitam Pekat & Posisi Simetris Kema-Temo
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
@@ -105,10 +105,10 @@ st.markdown(f"""
         transform: scale(1.08);
     }}
 
-    /* Khusus Menggeser Kema ke Kiri */
+    /* KEMA DIGESER KE KIRI AGAR JARAKNYA SIMETRIS DENGAN TEMO */
     .kema-container {{
         position: relative;
-        left: -35px;
+        left: -65px;
     }}
 
     /* NAMA MASKOT (KEMA & TEMO) */
@@ -145,7 +145,7 @@ st.markdown(f"""
         color: #1E293B !important;
     }}
 
-    /* Kustomisasi Radio Button Sidebar Menjadi Hitam Pekat Saat Dipilih */
+    /* KUSTOMISASI TOTAL RADIO BUTTON SIDEBAR (Bunder-bunder Hitam Pekat Saat Dipilih) */
     [data-testid="stSidebar"] {{
         background-color: rgba(3, 105, 161, 0.95) !important;
         color: white;
@@ -155,14 +155,14 @@ st.markdown(f"""
         font-weight: 600;
         font-size: 1.05rem;
     }}
-    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] {{
-        background-color: rgba(0, 0, 0, 0.25) !important;
-        border-radius: 10px;
-        padding: 4px;
-    }}
-    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] div {{
+    /* Memaksa lingkaran luar & dalam radio button menjadi hitam pekat saat aktif */
+    [data-testid="stSidebar"] div[role="radio"] div[aria-checked="true"],
+    [data-testid="stSidebar"] input[type="radio"]:checked + div {{
         background-color: #000000 !important;
         border-color: #000000 !important;
+    }}
+    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] div div {{
+        background-color: #000000 !important;
     }}
 
     [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {{
@@ -214,7 +214,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Inisialisasi Database Sesi (Menyimpan Status Penanganan, Enkripsi, & Jadwal)
+# Inisialisasi Database Sesi
 if 'db_laporan' not in st.session_state:
     st.session_state.db_laporan = pd.DataFrame(columns=[
         'ID_Kasus', 'Waktu', 'Kategori', 'Isi_Laporan_Enkripsi', 'Status_Urgensi', 
@@ -265,7 +265,7 @@ with st.sidebar:
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Header Rata Tengah: Logo MAN 2 Kudus 6x Lebih Besar di Atas + Judul Utama
+    # Header Rata Tengah: Logo MAN 2 Kudus & Judul Utama
     logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="school-logo-img"><br>' if logo_base64 else ''
     st.markdown(f"""
         <div class="header-center-box">
@@ -274,7 +274,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT KEMA (Digeser ke kiri) & TEMO
+    # MASKOT KEMA (Digeser lebih ke kiri agar simetris) & TEMO
     col_m1, col_text, col_m2 = st.columns([1.5, 2.5, 1.5])
     
     with col_m1:
