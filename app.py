@@ -8,13 +8,13 @@ import os
 # 1. KONFIGURASI HALAMAN & CSS FULL TRANSPARAN
 # ==========================================
 st.set_page_config(
-    page_title="Curhatin - Safe Space MAN",
+    page_title="CurhatIn - Safe Space MAN",
     page_icon="🦀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Fungsi konversi background laut lokal ke Base64
+# Konversi background laut lokal ke Base64
 def img_to_base64(file_path):
     if os.path.exists(file_path):
         with open(file_path, "rb") as f:
@@ -25,44 +25,43 @@ def img_to_base64(file_path):
 bg_base64 = img_to_base64("bg_laut.jpg")
 
 # URL Gambar Maskot Kepiting Online yang Stabil & Pasti Muncul
-URL_CEWE = "https://cdn-icons-png.flaticon.com/512/2991/2991148.png"  # Ilustrasi Kepiting / Karakter Ramah
-URL_COWO = "https://cdn-icons-png.flaticon.com/512/2991/2991108.png"  # Ilustrasi Kepiting / Karakter Pendamping
+URL_CEWE = "https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+URL_COWO = "https://cdn-icons-png.flaticon.com/512/2991/2991108.png"
 
-# CSS Kustom Maksimal: Menghilangkan Seluruh Kotak Hitam/Putih & Membuat Transparan
+# CSS Kustom: Memaksa Latar Belakang Kotak Judul Menjadi Transparan Total
 st.markdown(f"""
     <style>
     /* Background Laut Utama */
     .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url("data:image/jpg;base64,{bg_base64}");
+        background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("data:image/jpg;base64,{bg_base64}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     
-    /* MEMBUAT SEMUA KOTAK/KONTAINER BAWAAN STREAMLIT MENJADI TRANSPARAN */
-    .block-container, [data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {{
+    /* MENJADIKAN SEMUA WADAH TEKS BAGIAN ATAS TRANSPARANS TANPA KOTAK HITAM/PUTIH */
+    .block-container {{
+        background: transparent !important;
+    }}
+    div[data-testid="stVerticalBlock"] > div > div[data-testid="stMarkdownContainer"] {{
         background: transparent !important;
     }}
     
-    /* Menghilangkan background pada teks, markdown, dan judul */
-    .stMarkdown, h1, h2, h3, p, span {{
-        background: transparent !important;
-    }}
-    
-    /* Judul Utama dengan Bayangan Elegan Tanpa Kotak */
+    /* Judul Utama dengan Bayangan Elegan Menyatu di Atas Laut */
     .main-title {{
         color: #FFFFFF !important;
-        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.9);
+        text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.95);
         font-weight: 900;
         text-align: center;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         font-size: 2.2rem;
+        background: transparent !important;
     }}
 
-    /* Kotak Pesan Maskot yang Bersih & Semi-Transparan */
+    /* Kotak Pesan Maskot */
     .speech-bubble {{
-        background-color: rgba(255, 255, 255, 0.90);
+        background-color: rgba(255, 255, 255, 0.92);
         padding: 18px 22px;
         border-radius: 16px;
         border-left: 6px solid #0284C7;
@@ -75,7 +74,7 @@ st.markdown(f"""
 
     /* Wadah Form & Tab Tetap Nyaman Dibaca */
     .stTabs, form, [data-testid="stForm"] {{
-        background-color: rgba(255, 255, 255, 0.94) !important;
+        background-color: rgba(255, 255, 255, 0.95) !important;
         padding: 25px;
         border-radius: 18px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -187,7 +186,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     col_m1, col_text, col_m2 = st.columns([1, 2, 1])
     
     with col_m1:
-        st.markdown(f"<div style='text-align: center;'><img src='{URL_CEWE}' width='110' style='border-radius: 12px; background: rgba(255,255,255,0.8); padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepi (Cewek)</p></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: center;'><img src='{URL_CEWE}' width='110' style='border-radius: 12px; background: rgba(255,255,255,0.85); padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepi (Cewek)</p></div>", unsafe_allow_html=True)
             
     with col_text:
         st.markdown("""
@@ -198,7 +197,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         """, unsafe_allow_html=True)
         
     with col_m2:
-        st.markdown(f"<div style='text-align: center;'><img src='{URL_COWO}' width='110' style='border-radius: 12px; background: rgba(255,255,255,0.8); padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepo (Cowok)</p></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='text-align: center;'><img src='{URL_COWO}' width='110' style='border-radius: 12px; background: rgba(255,255,255,0.85); padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepo (Cowok)</p></div>", unsafe_allow_html=True)
 
     st.write("")
     st.divider()
