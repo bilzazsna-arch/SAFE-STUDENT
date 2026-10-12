@@ -5,7 +5,7 @@ import base64
 import os
 
 # ==========================================
-# 1. KONFIGURASI HALAMAN & CSS BACKGROUND LAUT
+# 1. KONFIGURASI HALAMAN & CSS FULL CUSTOM
 # ==========================================
 st.set_page_config(
     page_title="Curhatin - Safe Space MAN",
@@ -32,7 +32,7 @@ cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Ukuran Elemen Super Besar
+# CSS Kustom: Radio Button Hitam Pekat & Ukuran Maksimal
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
@@ -49,10 +49,10 @@ st.markdown(f"""
     /* MENGHAPUS KOTAK/LATAR POLOS PADA KONTEN UTAMA */
     [data-testid="stHeader"], .main .block-container {{
         background: transparent !important;
-        padding-top: 0.5rem !important;
+        padding-top: 0rem !important;
     }}
 
-    /* HAPUS HIGHLIGHT/BACKGROUND PUTIH DI BELAKANG DOKUMEN DAN TEKS MARKDOWN */
+    /* HAPUS HIGHLIGHT/BACKGROUND PUTIH DI BELAKANG TEKS MARKDOWN */
     .element-container, [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, 
     [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {{
         background: transparent !important;
@@ -62,41 +62,41 @@ st.markdown(f"""
     /* Container Header Tengah (Logo & Judul) */
     .header-center-box {{
         text-align: center;
-        margin-bottom: 30px;
-        margin-top: -10px;
+        margin-bottom: 25px;
+        margin-top: -30px;
         background: transparent !important;
     }}
     
-    /* Logo Sekolah SUPER BESAR (240px) */
+    /* Logo Sekolah DIPERBESAR 6 KALI & DIKEATASIN */
     .school-logo-img {{
-        width: 240px;
+        width: 320px;
         height: auto;
-        margin-bottom: 12px;
-        filter: drop-shadow(0px 8px 18px rgba(0,0,0,0.5));
-        border-radius: 16px;
+        margin-bottom: 10px;
+        filter: drop-shadow(0px 10px 24px rgba(0,0,0,0.6));
+        border-radius: 20px;
     }}
 
-    /* Judul Utama SUPER BESAR & MEGAH (3.8rem) */
+    /* Judul Utama SUPER MEGAH */
     .main-title {{
         font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
         text-shadow: 4px 4px 20px rgba(0, 0, 0, 0.95);
         font-weight: 900;
         text-align: center;
-        font-size: 3.8rem;
+        font-size: 3.5rem;
         margin: 0;
         line-height: 1.15;
         background: transparent !important;
     }}
 
-    /* Wadah Maskot Transparan & Kepiting SUPER BESAR (250px) */
+    /* Wadah Maskot Transparan & Kepiting Sangat Besar */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
         padding: 5px;
     }}
     .img-maskot-pure img {{
-        max-width: 250px;
+        max-width: 270px;
         height: auto;
         filter: drop-shadow(0px 10px 22px rgba(0,0,0,0.5));
         transition: transform 0.3s ease;
@@ -105,15 +105,15 @@ st.markdown(f"""
         transform: scale(1.08);
     }}
 
-    /* Nama Kema & Temo SUPER BESAR */
+    /* NAMA MASKOT (KEMA & TEMO) DIPERBESAR LAGI */
     .nama-maskot-estetik {{
         font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
         color: #FFFFFF !important;
-        font-size: 2rem;
-        font-weight: 800;
+        font-size: 2.4rem;
+        font-weight: 900;
         margin-top: 12px;
-        letter-spacing: 0.8px;
-        text-shadow: 3px 3px 10px rgba(3, 105, 161, 0.95), 0px 0px 12px rgba(255, 255, 255, 0.8);
+        letter-spacing: 1px;
+        text-shadow: 3px 3px 12px rgba(3, 105, 161, 0.95), 0px 0px 14px rgba(255, 255, 255, 0.9);
         background: transparent !important;
     }}
 
@@ -139,6 +139,31 @@ st.markdown(f"""
         color: #1E293B !important;
     }}
 
+    /* Kustomisasi Radio Button Sidebar Menjadi Hitam Pekat Saat Dipilih */
+    [data-testid="stSidebar"] {{
+        background-color: rgba(3, 105, 161, 0.95) !important;
+        color: white;
+    }}
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {{
+        color: #FFFFFF !important;
+        font-weight: 600;
+        font-size: 1.05rem;
+    }}
+    /* Lingkaran Radio Button Berubah Jadi Hitam Pekat saat Aktif */
+    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] {{
+        background-color: rgba(0, 0, 0, 0.25) !important;
+        border-radius: 10px;
+        padding: 4px;
+    }}
+    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] div {{
+        background-color: #000000 !important;
+        border-color: #000000 !important;
+    }}
+
+    [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {{
+        color: #F0F9FF !important;
+    }}
+
     /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca di Atas Laut */
     .stTabs, form, [data-testid="stForm"] {{
         background-color: rgba(255, 255, 255, 0.92) !important;
@@ -148,19 +173,6 @@ st.markdown(f"""
         box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3) !important;
     }}
     
-    /* Sidebar Nuansa Laut Dalam */
-    [data-testid="stSidebar"] {{
-        background-color: rgba(3, 105, 161, 0.95) !important;
-        color: white;
-    }}
-    [data-testid="stSidebar"] .stRadio label {{
-        color: white !important;
-        font-weight: 600;
-    }}
-    [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] span {{
-        color: #F0F9FF !important;
-    }}
-
     /* Card Dashboard BK */
     .metric-card {{
         background-color: #FFFFFF !important;
@@ -244,11 +256,11 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
 
 # ==========================================
-# 4. HALAMAN SISWA (ELEMEN SUPER BESAR)
+# 4. HALAMAN SISWA
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Header Rata Tengah: Logo MAN 2 Super Besar di Atas + Judul Utama Megah di Bawahnya
+    # Header Rata Tengah: Logo MAN 2 Sangat Besar di Atas + Judul Utama
     logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="school-logo-img"><br>' if logo_base64 else ''
     st.markdown(f"""
         <div class="header-center-box">
@@ -257,7 +269,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT KEMA & TEMO BERDAMPINGAN SUPER BESAR
+    # MASKOT KEMA & TEMO SANGAT BESAR
     col_m1, col_text, col_m2 = st.columns([1.5, 2.5, 1.5])
     
     with col_m1:
@@ -406,7 +418,7 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
                 file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/css"
+                mime="text/csv"
             )
             
     elif passcode != "":
