@@ -14,7 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Fungsi untuk mengubah file gambar lokal menjadi Base64 agar 100% pasti muncul
+# Fungsi konversi lokal ke Base64 dengan pengecekan aman
 def img_to_base64(file_path):
     if os.path.exists(file_path):
         with open(file_path, "rb") as f:
@@ -22,55 +22,61 @@ def img_to_base64(file_path):
         return base64.b64encode(data).decode()
     return ""
 
-# Konversi gambar lokal ke Base64
 bg_base64 = img_to_base64("bg_laut.jpg")
 cewe_base64 = img_to_base64("kepiting_cewe.jpeg")
 cowo_base64 = img_to_base64("kepiting_cowo.jpg")
 
-# CSS Kustom untuk Background Laut & Menghilangkan Kotak Putih
+# CSS Kustom Maksimal: Menghilangkan Seluruh Kotak Putih & Membuat Transparan
 st.markdown(f"""
     <style>
     /* Background Laut Utama */
     .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)), url("data:image/jpg;base64,{bg_base64}");
+        background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url("data:image/jpg;base64,{bg_base64}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     
-    /* Menghilangkan latar belakang putih di judul & teks bagian atas */
-    .stMarkdown, h1, h2, h3, p {{
+    /* MEMBUAT SEMUA KOTAK/KONTAINER BAWAAN STREAMLIT MENJADI TRANSPARAN */
+    .block-container, [data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {{
         background: transparent !important;
     }}
     
-    /* Judul Utama agar teks putih/kontras elegan di atas laut */
+    /* Menghilangkan background putih pada teks, markdown, dan judul */
+    .stMarkdown, h1, h2, h3, p, span {{
+        background: transparent !important;
+    }}
+    
+    /* Judul Utama dengan Bayangan Elegan */
     .main-title {{
-        color: #FFFFFF;
-        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
-        font-weight: 800;
+        color: #FFFFFF !important;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+        font-weight: 900;
         text-align: center;
         margin-bottom: 20px;
+        font-size: 2.2rem;
     }}
 
-    /* Kotak sambutan maskot transparan estetik */
+    /* Kotak Pesan Maskot yang Bersih & Semi-Transparan */
     .speech-bubble {{
-        background-color: rgba(255, 255, 255, 0.90);
-        padding: 15px 20px;
+        background-color: rgba(255, 255, 255, 0.88);
+        padding: 18px 22px;
         border-radius: 16px;
         border-left: 6px solid #0284C7;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
         color: #1E293B;
         text-align: center;
-        font-weight: 500;
+        font-weight: 600;
+        margin-top: 10px;
     }}
 
-    /* Wadah formulir di bawah tetap bersih & nyaman dibaca */
-    .stTabs, form {{
-        background-color: rgba(255, 255, 255, 0.92);
+    /* Wadah Form & Tab Tetap Nyaman Dibaca */
+    .stTabs, form, [data-testid="stForm"] {{
+        background-color: rgba(255, 255, 255, 0.92) !important;
         padding: 25px;
         border-radius: 18px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     }}
     
     /* Sidebar Nuansa Laut Dalam */
@@ -172,17 +178,17 @@ with st.sidebar:
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Judul dengan Styling Kustom Tanpa Kotak Putih
+    # Judul dengan Styling HTML Murni (Transparan Total)
     st.markdown("<h1 class='main-title'>🦀 CurhatIn Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
     
-    # MENAMPILKAN MASKOT KEPITING CEWEK & COWOK BERDAMPINGAN VIA BASE64
+    # MASKOT KEPITING CEWEK (.jpeg) & COWOK (.jpg) BERDAMPINGAN VIA HTML BASE64
     col_m1, col_text, col_m2 = st.columns([1, 2, 1])
     
     with col_m1:
         if cewe_base64:
-            st.markdown(f"<div style='text-align: center;'><img src='data:image/jpeg;base64,{cewe_base64}' width='130' style='border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);'>🦀 Kepi (Cewek)</p></div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align: center;'><img src='data:image/jpeg;base64,{cewe_base64}' width='130' style='border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepi (Cewek)</p></div>", unsafe_allow_html=True)
         else:
-            st.warning("⚠️ kepiting_cewe.jpeg belum terbaca")
+            st.warning("⚠️ kepiting_cewe.jpeg belum ditemukan")
             
     with col_text:
         st.markdown("""
@@ -194,11 +200,11 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         
     with col_m2:
         if cowo_base64:
-            st.markdown(f"<div style='text-align: center;'><img src='data:image/jpg;base64,{cowo_base64}' width='130' style='border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);'>🦀 Kepo (Cowok)</p></div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align: center;'><img src='data:image/jpg;base64,{cowo_base64}' width='130' style='border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepo (Cowok)</p></div>", unsafe_allow_html=True)
         else:
-            st.warning("⚠️ kepiting_cowo.jpg belum terbaca")
+            st.warning("⚠️ kepiting_cowo.jpg belum ditemukan")
 
-    st.write("") # Spasi pemisah
+    st.write("")
     st.divider()
 
     tab1, tab2 = st.tabs(["💬 Tulis Laporan Anonim", "📅 Jadwal Tatap Muka"])
