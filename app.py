@@ -26,12 +26,12 @@ def muat_gambar_base64(nama_file):
         return base64.b64encode(data).decode()
     return None
 
-# Membaca gambar-gambar asli milik Nabila
+# Membaca background dan file gambar kepiting (kepiting_cewe.png & kepiting_cowo.png)
 bg_base64 = muat_gambar_base64("bg_laut.jpg")
-cewe_base64 = muat_gambar_base64("kepiting_cewek.png")
-cowo_base64 = muat_gambar_base64("kepiting_cowok.png")
+cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
+cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 
-# Import Font Estetik Google (Fredoka & Poppins) & CSS Kustom
+# Import Font Estetik Google (Fredoka & Poppins) & CSS Kustom Tanpa Kotak Putih
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;600;700&display=swap');
@@ -64,7 +64,7 @@ st.markdown(f"""
         background: transparent !important;
     }}
 
-    /* Wadah Gambar Maskot Murni Transparan (Tanpa Kotak Putih) */
+    /* Wadah Gambar Maskot Murni Transparan Tanpa Kotak Putih di Belakangnya */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
@@ -220,7 +220,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     # Judul Bebas Latar Polos
     st.markdown("<h1 class='main-title'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
     
-    # MASKOT KEMA & TEMO BERDAMPINGAN TANPA KOTAK PUTIH
+    # MASKOT KEMA & TEMO BERDAMPINGAN MURNI TRANSPARAN TANPA KOTAK PUTIH DI BELAKANGNYA
     col_m1, col_text, col_m2 = st.columns([1, 2.2, 1])
     
     with col_m1:
@@ -228,11 +228,11 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
             st.markdown(f"""
                 <div class="img-maskot-pure">
                     <img src="data:image/png;base64,{cewe_base64}">
-                    <div class="nama-maskot-estetik">🦀 Kema (Cewek)</div>
+                    <div class="nama-maskot-estetik">🦀 Kema</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            st.warning("⚠️ File 'kepiting_cewek.png' tidak ditemukan")
+            st.warning("⚠️ File 'kepiting_cewe.png' tidak ditemukan")
             
     with col_text:
         st.markdown("""
@@ -247,11 +247,11 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
             st.markdown(f"""
                 <div class="img-maskot-pure">
                     <img src="data:image/png;base64,{cowo_base64}">
-                    <div class="nama-maskot-estetik">🦀 Temo (Cowok)</div>
+                    <div class="nama-maskot-estetik">🦀 Temo</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            st.warning("⚠️ File 'kepiting_cowok.png' tidak ditemukan")
+            st.warning("⚠️ File 'kepiting_cowo.png' tidak ditemukan")
 
     st.write("")
     st.divider()
@@ -369,7 +369,7 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
                 file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/csv"
+                mime="text/css"
             )
             
     elif passcode != "":
