@@ -5,7 +5,7 @@ import base64
 import os
 
 # ==========================================
-# 1. KONFIGURASI HALAMAN & CSS FULL TRANSPARAN
+# 1. KONFIGURASI HALAMAN & CSS BACKGROUND LAUT
 # ==========================================
 st.set_page_config(
     page_title="Curhatin - Safe Space MAN",
@@ -14,10 +14,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Mendapatkan lokasi direktori folder utama
+# Mendapatkan lokasi direktori folder utama tempat app.py berada
 DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
 
-# Fungsi Pembaca Gambar Lokal
+# Fungsi Pembaca Gambar Lokal ke Base64
 def muat_gambar_base64(nama_file):
     path_lengkap = os.path.join(DIR_UTAMA, nama_file)
     if os.path.exists(path_lengkap):
@@ -26,35 +26,39 @@ def muat_gambar_base64(nama_file):
         return base64.b64encode(data).decode()
     return None
 
-# Membaca background dan file gambar kepiting (kepiting_cewe.png & kepiting_cowo.png)
+# Membaca background laut, maskot, dan logo sekolah
 bg_base64 = muat_gambar_base64("bg_laut.jpg")
 cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
+logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Menghapus Total Background Putih pada Seluruh Elemen Teks
+# CSS Kustom: Menampilkan Gambar Laut & Menghapus Kotak Putih pada Judul/Teks saja
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;600;700&display=swap');
 
-    /* Background Laut Utama Memenuhi Seluruh Layar */
-    .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.20), rgba(0,0,0,0.20)), url("data:image/jpg;base64,{bg_base64 if bg_base64 else ''}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
+    /* BACKGROUND LAUT UTAMA MEMENUHI SELURUH LAYAR */
+    [data-testid="stAppViewContainer"] {{
+        background-image: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)), url("data:image/jpg;base64,{bg_base64 if bg_base64 else ''}") !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
     }}
     
-    /* MENGHAPUS SEMUA BACKGROUND PUTIH/TRANSPARAN PADA SELURUH WADAH & TEKS */
-    .main, .block-container, [data-testid="stVerticalBlock"], 
-    div[data-testid="stMarkdownContainer"], [data-testid="stHeader"], 
-    .element-container, p, span, h1, h2, h3, b, strong, div {{
+    /* MENGHAPUS KOTAK/LATAR POLOS HANYA PADA KONTEN UTAMA DENGAN MENJAGA BACKGROUND LAUT */
+    [data-testid="stHeader"], .main .block-container {{
         background: transparent !important;
-        background-color: transparent !important;
-        box-shadow: none !important;
     }}
 
-    /* Judul Utama Tanpa Latar Putih Menyatu Elegan di Atas Laut */
+    /* HAPUS HIGHLIGHT/BACKGROUND PUTIH DI BELAKANG DOKUMEN DAN TEKS MARKDOWN */
+    .element-container, [data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] span, 
+    [data-testid="stMarkdownContainer"] h1, [data-testid="stMarkdownContainer"] h2, [data-testid="stMarkdownContainer"] h3 {{
+        background: transparent !important;
+        background-color: transparent !important;
+    }}
+
+    /* Judul Utama Tanpa Latar Belakang Menyatu di Atas Laut */
     .main-title {{
         font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
@@ -62,11 +66,11 @@ st.markdown(f"""
         font-weight: 700;
         text-align: center;
         margin-bottom: 25px;
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         background: transparent !important;
     }}
 
-    /* Wadah Gambar Maskot Transparan */
+    /* Wadah Maskot Transparan */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
@@ -82,7 +86,7 @@ st.markdown(f"""
         transform: scale(1.08);
     }}
 
-    /* Font Estetik Spesial untuk Nama Kema & Temo Tanpa Latar Belakang */
+    /* Nama Kema & Temo Tanpa Latar Belakang */
     .nama-maskot-estetik {{
         font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
         color: #FFFFFF !important;
@@ -94,10 +98,10 @@ st.markdown(f"""
         background: transparent !important;
     }}
 
-    /* Kotak Pesan Sambutan Kaca Semi-Transparan Rapi (Tanpa Sorot Putih di Teks Dalamnya) */
+    /* Kotak Pesan Sambutan Kaca Transparan Estetik */
     .speech-bubble {{
         font-family: 'Poppins', sans-serif;
-        background-color: rgba(255, 255, 255, 0.88) !important;
+        background-color: rgba(255, 255, 255, 0.85) !important;
         backdrop-filter: blur(10px);
         padding: 20px 24px;
         border-radius: 20px;
@@ -116,7 +120,7 @@ st.markdown(f"""
         color: #1E293B !important;
     }}
 
-    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca */
+    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca di Atas Laut */
     .stTabs, form, [data-testid="stForm"] {{
         background-color: rgba(255, 255, 255, 0.92) !important;
         backdrop-filter: blur(12px);
@@ -220,14 +224,27 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
 
 # ==========================================
-# 4. HALAMAN SISWA (KEMA & TEMO MURNI TRANSPARAN)
+# 4. HALAMAN SISWA (KEMA, TEMO & LOGO SEKOLAH)
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Judul Bebas Latar Polos
-    st.markdown("<h1 class='main-title'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
+    # Layout Header dengan Logo Sekolah di Pojok Kanan
+    col_head_title, col_head_logo = st.columns([5, 1])
+    with col_head_title:
+        st.markdown("<h1 class='main-title' style='text-align: left; padding-top: 10px;'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
+    with col_head_logo:
+        if logo_base64:
+            st.markdown(f"""
+                <div style="text-align: right; padding-top: 5px;">
+                    <img src="data:image/png;base64,{logo_base64}" width="75" style="filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.3)); border-radius: 10px;">
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.caption("Logo_MAN2.png belum ada")
     
-    # MASKOT KEMA & TEMO BERDAMPINGAN MURNI TRANSPARAN
+    st.write("")
+
+    # MASKOT KEMA & TEMO BERDAMPINGAN
     col_m1, col_text, col_m2 = st.columns([1, 2.2, 1])
     
     with col_m1:
@@ -376,7 +393,7 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
                 file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/csv"
+                mime="text/css"
             )
             
     elif passcode != "":
