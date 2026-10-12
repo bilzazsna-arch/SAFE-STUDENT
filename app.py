@@ -1,9 +1,11 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, date, time
+import base64
+import os
 
 # ==========================================
-# 1. KONFIGURASI HALAMAN & CSS BACKGROUND LAUT
+# 1. KONFIGURASI HALAMAN & CSS FULL TRANSPARAN
 # ==========================================
 st.set_page_config(
     page_title="CurhatIn - Safe Space MAN",
@@ -12,29 +14,63 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# LINK RAW GITHUB SESUAI EKSTENSI ASLI (Cewe: .jpeg, Cowo: .png, Background: .jpg)
-URL_BG = "https://raw.githubusercontent.com/bilzazsna-arch/SAFE-STUDENT/main/bg_laut.jpg"
-URL_CEWE = "https://raw.githubusercontent.com/bilzazsna-arch/SAFE-STUDENT/main/kepiting_cewe.jpeg"
-URL_COWO = "https://raw.githubusercontent.com/bilzazsna-arch/SAFE-STUDENT/main/kepiting_cowo.png"
+# Fungsi untuk mengubah file gambar lokal menjadi Base64 agar 100% pasti muncul
+def img_to_base64(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    return ""
 
-# Styling CSS Background & Tampilan Utama
+# Konversi gambar lokal ke Base64
+bg_base64 = img_to_base64("bg_laut.jpg")
+cewe_base64 = img_to_base64("kepiting_cewe.jpeg")
+cowo_base64 = img_to_base64("kepiting_cowo.jpg")
+
+# CSS Kustom untuk Background Laut & Menghilangkan Kotak Putih
 st.markdown(f"""
     <style>
+    /* Background Laut Utama */
     .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("{URL_BG}");
+        background-image: linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.15)), url("data:image/jpg;base64,{bg_base64}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     
-    /* Transparansi Wadah Konten agar Teks Terbaca Jelas */
-    .main .block-container {{
+    /* Menghilangkan latar belakang putih di judul & teks bagian atas */
+    .stMarkdown, h1, h2, h3, p {{
+        background: transparent !important;
+    }}
+    
+    /* Judul Utama agar teks putih/kontras elegan di atas laut */
+    .main-title {{
+        color: #FFFFFF;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 20px;
+    }}
+
+    /* Kotak sambutan maskot transparan estetik */
+    .speech-bubble {{
+        background-color: rgba(255, 255, 255, 0.90);
+        padding: 15px 20px;
+        border-radius: 16px;
+        border-left: 6px solid #0284C7;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        color: #1E293B;
+        text-align: center;
+        font-weight: 500;
+    }}
+
+    /* Wadah formulir di bawah tetap bersih & nyaman dibaca */
+    .stTabs, form {{
         background-color: rgba(255, 255, 255, 0.92);
-        border-radius: 20px;
-        padding: 25px 30px;
-        margin-top: 15px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }}
     
     /* Sidebar Nuansa Laut Dalam */
@@ -136,27 +172,33 @@ with st.sidebar:
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    st.title("🦀 CurhatIn Digital MAN - Safe Space")
+    # Judul dengan Styling Kustom Tanpa Kotak Putih
+    st.markdown("<h1 class='main-title'>🦀 CurhatIn Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
     
-    # MENAMPILKAN MASKOT KEPITING CEWEK (.jpeg) & COWOK (.png) BERDAMPINGAN
+    # MENAMPILKAN MASKOT KEPITING CEWEK & COWOK BERDAMPINGAN VIA BASE64
     col_m1, col_text, col_m2 = st.columns([1, 2, 1])
     
     with col_m1:
-        st.image(URL_CEWE, width=130)
-        st.caption("🦀 **Kepi (Cewek)**")
+        if cewe_base64:
+            st.markdown(f"<div style='text-align: center;'><img src='data:image/jpeg;base64,{cewe_base64}' width='130' style='border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);'>🦀 Kepi (Cewek)</p></div>", unsafe_allow_html=True)
+        else:
+            st.warning("⚠️ kepiting_cewe.jpeg belum terbaca")
             
     with col_text:
         st.markdown("""
-            <div style="background-color: #F0F9FF; padding: 18px; border-radius: 12px; border-left: 5px solid #0284C7; text-align: center; margin-top: 10px;">
+            <div class="speech-bubble">
                 <b style="font-size: 1.1rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
                 <span style="color: #334155;">Kami berdua adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
     with col_m2:
-        st.image(URL_COWO, width=130)
-        st.caption("🦀 **Kepo (Cowok)**")
+        if cowo_base64:
+            st.markdown(f"<div style='text-align: center;'><img src='data:image/jpg;base64,{cowo_base64}' width='130' style='border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);'>🦀 Kepo (Cowok)</p></div>", unsafe_allow_html=True)
+        else:
+            st.warning("⚠️ kepiting_cowo.jpg belum terbaca")
 
+    st.write("") # Spasi pemisah
     st.divider()
 
     tab1, tab2 = st.tabs(["💬 Tulis Laporan Anonim", "📅 Jadwal Tatap Muka"])
