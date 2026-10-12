@@ -8,73 +8,96 @@ import os
 # 1. KONFIGURASI HALAMAN & CSS FULL TRANSPARAN
 # ==========================================
 st.set_page_config(
-    page_title="CurhatIn - Safe Space MAN",
+    page_title="Curhatin - Safe Space MAN",
     page_icon="🦀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Konversi background laut lokal ke Base64
-def img_to_base64(file_path):
-    if os.path.exists(file_path):
-        with open(file_path, "rb") as f:
+# Mendapatkan direktori folder utama tempat app.py berada secara presisi
+DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
+
+# Fungsi Pembaca Gambar Lokal yang Akurat 100%
+def muat_gambar_base64(nama_file):
+    path_lengkap = os.path.join(DIR_UTAMA, nama_file)
+    if os.path.exists(path_lengkap):
+        with open(path_lengkap, "rb") as f:
             data = f.read()
         return base64.b64encode(data).decode()
-    return ""
+    return None
 
-bg_base64 = img_to_base64("bg_laut.jpg")
+# Membaca file gambar milik Nabila (Semua PNG & Background JPG)
+bg_base64 = muat_gambar_base64("bg_laut.jpg")
+cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
+cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 
-# URL Gambar Maskot Kepiting Online yang Stabil & Pasti Muncul
-URL_CEWE = "https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
-URL_COWO = "https://cdn-icons-png.flaticon.com/512/2991/2991108.png"
-
-# CSS Kustom: Memaksa Latar Belakang Kotak Judul Menjadi Transparan Total
+# CSS Kustom: Menghapus Semua Latar Polos/Putih Bawaan Streamlit
 st.markdown(f"""
     <style>
-    /* Background Laut Utama */
+    /* Background Laut Utama Memenuhi Seluruh Layar */
     .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("data:image/jpg;base64,{bg_base64}");
+        background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url("data:image/jpg;base64,{bg_base64 if bg_base64 else ''}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     
-    /* MENJADIKAN SEMUA WADAH TEKS BAGIAN ATAS TRANSPARANS TANPA KOTAK HITAM/PUTIH */
-    .block-container {{
+    /* MENGHAPUS BACKGROUND POLOS DARI SELURUH ELEMEN UTAMA */
+    .main, .block-container, [data-testid="stVerticalBlock"], 
+    div[data-testid="stMarkdownContainer"], [data-testid="stHeader"], .element-container {{
         background: transparent !important;
+        background-color: transparent !important;
     }}
-    div[data-testid="stVerticalBlock"] > div > div[data-testid="stMarkdownContainer"] {{
-        background: transparent !important;
-    }}
-    
-    /* Judul Utama dengan Bayangan Elegan Menyatu di Atas Laut */
+
+    /* Judul Utama Menyatu Tanpa Latar Polos */
     .main-title {{
         color: #FFFFFF !important;
         text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.95);
         font-weight: 900;
         text-align: center;
-        margin-bottom: 20px;
-        font-size: 2.2rem;
+        margin-bottom: 25px;
+        font-size: 2.3rem;
         background: transparent !important;
     }}
 
-    /* Kotak Pesan Maskot */
+    /* Wadah Gambar Maskot Asli Kepiting */
+    .img-maskot-box {{
+        text-align: center;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        border-radius: 16px;
+        padding: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }}
+    .img-maskot-box img {{
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+    }}
+
+    /* Kotak Pesan Sambutan Semi-Transparan */
     .speech-bubble {{
-        background-color: rgba(255, 255, 255, 0.92);
+        background-color: rgba(255, 255, 255, 0.88) !important;
+        backdrop-filter: blur(8px);
         padding: 18px 22px;
         border-radius: 16px;
         border-left: 6px solid #0284C7;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
         color: #1E293B;
         text-align: center;
         font-weight: 600;
-        margin-top: 10px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }}
 
-    /* Wadah Form & Tab Tetap Nyaman Dibaca */
+    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca */
     .stTabs, form, [data-testid="stForm"] {{
-        background-color: rgba(255, 255, 255, 0.95) !important;
+        background-color: rgba(255, 255, 255, 0.90) !important;
+        backdrop-filter: blur(10px);
         padding: 25px;
         border-radius: 18px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -163,7 +186,7 @@ def analisa_nlp_ringan(teks):
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=60)
-    st.markdown("### **CurhatIn Digital MAN**")
+    st.markdown("### **Curhatin Digital MAN**")
     st.caption("🌊 Zona Aman Pengaduan Siswa 24 Jam")
     st.divider()
     
@@ -175,29 +198,45 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
 
 # ==========================================
-# 4. HALAMAN SISWA (DUA MASKOT KEPITING & FITUR)
+# 4. HALAMAN SISWA (GAMBAR MASKOT PNG ASLI & FITUR)
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Judul Bersih Tanpa Kotak
-    st.markdown("<h1 class='main-title'>🦀 CurhatIn Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
+    # Judul Bebas Latar Polos
+    st.markdown("<h1 class='main-title'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
     
-    # MASKOT KEPITING BERDAMPINGAN
+    # MASKOT KEPITING CEWEK (kepiting_cewe.png) & COWOK (kepiting_cowo.png)
     col_m1, col_text, col_m2 = st.columns([1, 2, 1])
     
     with col_m1:
-        st.markdown(f"<div style='text-align: center;'><img src='{URL_CEWE}' width='110' style='border-radius: 12px; background: rgba(255,255,255,0.85); padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepi (Cewek)</p></div>", unsafe_allow_html=True)
+        if cewe_base64:
+            st.markdown(f"""
+                <div class="img-maskot-box">
+                    <img src="data:image/png;base64,{cewe_base64}" width="130">
+                    <div style="color: #0369A1; font-weight: bold; margin-top: 6px;">🦀 Kepi (Cewek)</div>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.warning("⚠️ File 'kepiting_cewe.png' belum ada di GitHub")
             
     with col_text:
         st.markdown("""
             <div class="speech-bubble">
-                <b style="font-size: 1.1rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
+                <b style="font-size: 1.15rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
                 <span style="color: #334155;">Kami berdua adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
     with col_m2:
-        st.markdown(f"<div style='text-align: center;'><img src='{URL_COWO}' width='110' style='border-radius: 12px; background: rgba(255,255,255,0.85); padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);'><p style='color: white; font-weight: bold; margin-top: 8px; text-shadow: 1px 1px 4px rgba(0,0,0,0.9);'>🦀 Kepo (Cowok)</p></div>", unsafe_allow_html=True)
+        if cowo_base64:
+            st.markdown(f"""
+                <div class="img-maskot-box">
+                    <img src="data:image/png;base64,{cowo_base64}" width="130">
+                    <div style="color: #0369A1; font-weight: bold; margin-top: 6px;">🦀 Kepo (Cowok)</div>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.warning("⚠️ File 'kepiting_cowo.png' belum ada di GitHub")
 
     st.write("")
     st.divider()
