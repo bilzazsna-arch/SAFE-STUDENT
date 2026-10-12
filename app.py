@@ -32,7 +32,7 @@ cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Menampilkan Gambar Laut & Menghapus Kotak Putih pada Judul/Teks saja
+# CSS Kustom: Menampilkan Gambar Laut & Menghapus Kotak Putih
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;600;700&display=swap');
@@ -46,7 +46,7 @@ st.markdown(f"""
         background-attachment: fixed !important;
     }}
     
-    /* MENGHAPUS KOTAK/LATAR POLOS HANYA PADA KONTEN UTAMA DENGAN MENJAGA BACKGROUND LAUT */
+    /* MENGHAPUS KOTAK/LATAR POLOS PADA KONTEN UTAMA */
     [data-testid="stHeader"], .main .block-container {{
         background: transparent !important;
     }}
@@ -58,15 +58,31 @@ st.markdown(f"""
         background-color: transparent !important;
     }}
 
-    /* Judul Utama Tanpa Latar Belakang Menyatu di Atas Laut */
+    /* Container Header Tengah (Logo & Judul) */
+    .header-center-box {{
+        text-align: center;
+        margin-bottom: 25px;
+        background: transparent !important;
+    }}
+    
+    /* Logo Sekolah Rata Tengah & Ukuran Sedang */
+    .school-logo-img {{
+        width: 100px;
+        height: auto;
+        margin-bottom: 12px;
+        filter: drop-shadow(0px 6px 12px rgba(0,0,0,0.4));
+        border-radius: 12px;
+    }}
+
+    /* Judul Utama Rata Tengah Tanpa Latar Belakang */
     .main-title {{
         font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
         text-shadow: 3px 3px 14px rgba(0, 0, 0, 0.95);
         font-weight: 700;
         text-align: center;
-        margin-bottom: 25px;
         font-size: 2.3rem;
+        margin: 0;
         background: transparent !important;
     }}
 
@@ -224,25 +240,18 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
 
 # ==========================================
-# 4. HALAMAN SISWA (KEMA, TEMO & LOGO SEKOLAH)
+# 4. HALAMAN SISWA (LOGO ATAS & JUDUL TENGAH)
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Layout Header dengan Logo Sekolah di Pojok Kanan
-    col_head_title, col_head_logo = st.columns([5, 1])
-    with col_head_title:
-        st.markdown("<h1 class='main-title' style='text-align: left; padding-top: 10px;'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
-    with col_head_logo:
-        if logo_base64:
-            st.markdown(f"""
-                <div style="text-align: right; padding-top: 5px;">
-                    <img src="data:image/png;base64,{logo_base64}" width="75" style="filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.3)); border-radius: 10px;">
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.caption("Logo_MAN2.png belum ada")
-    
-    st.write("")
+    # Header Rata Tengah: Logo MAN 2 di Atas + Judul Utama di Bawahnya
+    logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="school-logo-img"><br>' if logo_base64 else ''
+    st.markdown(f"""
+        <div class="header-center-box">
+            {logo_html}
+            <h1 class="main-title">🦀 Curhatin Digital MAN - Safe Space</h1>
+        </div>
+    """, unsafe_allow_html=True)
 
     # MASKOT KEMA & TEMO BERDAMPINGAN
     col_m1, col_text, col_m2 = st.columns([1, 2.2, 1])
@@ -393,7 +402,7 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
                 file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/css"
+                mime="text/csv"
             )
             
     elif passcode != "":
