@@ -8,7 +8,7 @@ import os
 # 1. KONFIGURASI HALAMAN & CSS FULL TRANSPARAN
 # ==========================================
 st.set_page_config(
-    page_title="CurhatIn - Safe Space MAN",
+    page_title="Curhatin - Safe Space MAN",
     page_icon="🦀",
     layout="wide",
     initial_sidebar_state="expanded"
