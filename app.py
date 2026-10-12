@@ -14,8 +14,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Mendapatkan lokasi direktori folder utama tempat app.py berada
+# Location path folder utama
 DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
+FILE_DATABASE = os.path.join(DIR_UTAMA, "db_laporan.csv")
 
 # Fungsi Pembaca Gambar Lokal ke Base64
 def muat_gambar_base64(nama_file):
@@ -32,7 +33,7 @@ cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Radio Button Hitam Pekat & Posisi Simetris Kema-Temo
+# CSS Kustom: Radio Button Hitam Pekat, Posisi Simetris Kema & Temo
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
@@ -59,7 +60,7 @@ st.markdown(f"""
         background-color: transparent !important;
     }}
 
-    /* Container Header Tengah (Logo & Judul) */
+    /* Header Tengah (Logo & Judul) */
     .header-center-box {{
         text-align: center;
         margin-bottom: 25px;
@@ -67,7 +68,7 @@ st.markdown(f"""
         background: transparent !important;
     }}
     
-    /* Logo Sekolah 6 Kali Lebih Besar & Di Atas */
+    /* Logo Sekolah 6x Lebih Besar */
     .school-logo-img {{
         width: 320px;
         height: auto;
@@ -76,7 +77,7 @@ st.markdown(f"""
         border-radius: 20px;
     }}
 
-    /* Judul Utama SUPER MEGAH */
+    /* Judul Utama */
     .main-title {{
         font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
@@ -89,14 +90,18 @@ st.markdown(f"""
         background: transparent !important;
     }}
 
-    /* Wadah Maskot Transparan & Kepiting Sangat Besar */
+    /* Wadah Maskot Transparan & Pas Simetris */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
         padding: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }}
     .img-maskot-pure img {{
-        max-width: 270px;
+        max-width: 250px;
         height: auto;
         filter: drop-shadow(0px 10px 22px rgba(0,0,0,0.5));
         transition: transform 0.3s ease;
@@ -105,22 +110,30 @@ st.markdown(f"""
         transform: scale(1.08);
     }}
 
-    /* KEMA DIGESER KE KIRI AGAR JARAKNYA SIMETRIS DENGAN TEMO */
-    .kema-container {{
+    /* Posisi Kema Simetris di Kiri */
+    .kema-box {{
         position: relative;
-        left: -65px;
+        left: -30px;
     }}
 
-    /* NAMA MASKOT (KEMA & TEMO) */
+    /* Posisi Temo Pas di Kanan */
+    .temo-box {{
+        position: relative;
+        right: -10px;
+    }}
+
+    /* Nama Maskot Estetik Tepat di Bawah Gambar */
     .nama-maskot-estetik {{
         font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
         color: #FFFFFF !important;
-        font-size: 2.4rem;
+        font-size: 2.3rem;
         font-weight: 900;
-        margin-top: 12px;
+        margin-top: 8px;
         letter-spacing: 1px;
         text-shadow: 3px 3px 12px rgba(3, 105, 161, 0.95), 0px 0px 14px rgba(255, 255, 255, 0.9);
         background: transparent !important;
+        text-align: center;
+        width: 100%;
     }}
 
     /* Kotak Pesan Sambutan Estetik */
@@ -145,7 +158,7 @@ st.markdown(f"""
         color: #1E293B !important;
     }}
 
-    /* KUSTOMISASI TOTAL RADIO BUTTON SIDEBAR (Bunder-bunder Hitam Pekat Saat Dipilih) */
+    /* RADIO BUTTON SIDEBAR HITAM PEKAT SAAT DIPILIH */
     [data-testid="stSidebar"] {{
         background-color: rgba(3, 105, 161, 0.95) !important;
         color: white;
@@ -155,13 +168,14 @@ st.markdown(f"""
         font-weight: 600;
         font-size: 1.05rem;
     }}
-    /* Memaksa lingkaran luar & dalam radio button menjadi hitam pekat saat aktif */
-    [data-testid="stSidebar"] div[role="radio"] div[aria-checked="true"],
-    [data-testid="stSidebar"] input[type="radio"]:checked + div {{
+    /* Lingkaran Bunderan Radio Button Menjadi Hitam Pekat */
+    [data-testid="stSidebar"] input[type="radio"]:checked + div,
+    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] > div:first-child {{
         background-color: #000000 !important;
         border-color: #000000 !important;
     }}
-    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] div div {{
+    [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] div {{
+        border-color: #000000 !important;
         background-color: #000000 !important;
     }}
 
@@ -169,7 +183,7 @@ st.markdown(f"""
         color: #F0F9FF !important;
     }}
 
-    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca di Atas Laut */
+    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca */
     .stTabs, form, [data-testid="stForm"] {{
         background-color: rgba(255, 255, 255, 0.92) !important;
         backdrop-filter: blur(12px);
@@ -214,15 +228,28 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Inisialisasi Database Sesi
-if 'db_laporan' not in st.session_state:
-    st.session_state.db_laporan = pd.DataFrame(columns=[
+# ==========================================
+# 2. SISTEM DATABASE PERSISTEN (ANTI HILANG)
+# ==========================================
+def muat_database():
+    if os.path.exists(FILE_DATABASE):
+        try:
+            return pd.read_csv(FILE_DATABASE)
+        except Exception:
+            pass
+    return pd.DataFrame(columns=[
         'ID_Kasus', 'Waktu', 'Kategori', 'Isi_Laporan_Enkripsi', 'Status_Urgensi', 
         'Skor_Urgensi', 'Jadwal_Tatap_Muka', 'Catatan_Rekam_Medis_BK', 'Status_Kasus'
     ])
 
+def simpan_database(df):
+    df.to_csv(FILE_DATABASE, index=False)
+
+if 'db_laporan' not in st.session_state or st.session_state.db_laporan.empty:
+    st.session_state.db_laporan = muat_database()
+
 # ==========================================
-# 2. ANALISA NLP RINGAN
+# 3. ANALISA NLP RINGAN
 # ==========================================
 def analisa_nlp_ringan(teks):
     teks_lower = teks.lower()
@@ -245,7 +272,7 @@ def analisa_nlp_ringan(teks):
         return "🟢 HIJAU (Urgensi Rendah)", skor
 
 # ==========================================
-# 3. SIDEBAR NAVIGATION
+# 4. SIDEBAR NAVIGATION
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=65)
@@ -261,7 +288,7 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Terenkripsi & Akses Terbatas Guru BK.*")
 
 # ==========================================
-# 4. HALAMAN SISWA
+# 5. HALAMAN SISWA
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
@@ -274,13 +301,13 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT KEMA (Digeser lebih ke kiri agar simetris) & TEMO
+    # MASKOT KEMA & TEMO SIMETRIS
     col_m1, col_text, col_m2 = st.columns([1.5, 2.5, 1.5])
     
     with col_m1:
         if cewe_base64:
             st.markdown(f"""
-                <div class="img-maskot-pure kema-container">
+                <div class="img-maskot-pure kema-box">
                     <img src="data:image/png;base64,{cewe_base64}">
                     <div class="nama-maskot-estetik">🦀 Kema</div>
                 </div>
@@ -299,7 +326,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     with col_m2:
         if cowo_base64:
             st.markdown(f"""
-                <div class="img-maskot-pure">
+                <div class="img-maskot-pure temo-box">
                     <img src="data:image/png;base64,{cowo_base64}">
                     <div class="nama-maskot-estetik">🦀 Temo</div>
                 </div>
@@ -349,6 +376,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 }])
                 
                 st.session_state.db_laporan = pd.concat([st.session_state.db_laporan, data_baru], ignore_index=True)
+                simpan_database(st.session_state.db_laporan)
                 
                 st.balloons()
                 st.success(f"✅ Laporan berhasil dikirim ke Guru BK MAN 2 Kudus! Kode Rahasiamu: **{id_kasus}**")
@@ -370,7 +398,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
             st.success(f"📅 Permintaan konseling tatap muka tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan ke Guru BK MAN 2 Kudus!")
 
 # ==========================================
-# 5. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
+# 6. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
 # ==========================================
 elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
     st.title("📊 Dashboard & Rekam Medis Konseling BK MAN 2 Kudus")
@@ -382,16 +410,18 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
         st.success("Akses Diterima. Selamat Bertugas, Bapa/Ibu Guru BK MAN 2 Kudus.")
         st.divider()
         
+        # Reload database terbaru dari file
+        st.session_state.db_laporan = muat_database()
         df = st.session_state.db_laporan
         
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(df)}</div><div class='metric-label'>Total Kasus</div></div>", unsafe_allow_html=True)
         with c2:
-            merah = len(df[df['Status_Urgensi'].str.contains("MERAH", na=False)])
+            merah = len(df[df['Status_Urgensi'].str.contains("MERAH", na=False)]) if not df.empty else 0
             st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#EF4444 !important;'>{merah}</div><div class='metric-label'>Urgensi Tinggi</div></div>", unsafe_allow_html=True)
         with c3:
-            kuning = len(df[df['Status_Urgensi'].str.contains("KUNING", na=False)])
+            kuning = len(df[df['Status_Urgensi'].str.contains("KUNING", na=False)]) if not df.empty else 0
             st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#F59E0B !important;'>{kuning}</div><div class='metric-label'>Urgensi Sedang</div></div>", unsafe_allow_html=True)
         with c4:
             st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#10B981 !important;'>{len(df)-merah-kuning}</div><div class='metric-label'>Urgensi Rendah</div></div>", unsafe_allow_html=True)
@@ -411,13 +441,14 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                     
                     st.divider()
                     st.write("**Catatan Rekam Medis Konseling & Konfirmasi Jadwal (Khusus BK):**")
-                    catatan_baru = st.text_area(f"Catatan / Hasil Konseling #{row['ID_Kasus']}:", value=row['Catatan_Rekam_Medis_BK'], key=f"notes_{idx}")
+                    catatan_baru = st.text_area(f"Catatan / Hasil Konseling #{row['ID_Kasus']}:", value=str(row['Catatan_Rekam_Medis_BK']), key=f"notes_{idx}")
                     status_baru = st.selectbox(f"Status Kasus #{row['ID_Kasus']}:", ["Baru", "Prosedur Konseling", "Tindak Lanjut", "Selesai"], key=f"status_{idx}")
                     
                     if st.button("Simpan Rekam Medis 💾", key=f"btn_{idx}"):
                         st.session_state.db_laporan.at[idx, 'Catatan_Rekam_Medis_BK'] = catatan_baru
                         st.session_state.db_laporan.at[idx, 'Status_Kasus'] = status_baru
-                        st.success("Rekam medis dan status kasus berhasil diperbarui!")
+                        simpan_database(st.session_state.db_laporan)
+                        st.success("Rekam medis dan status kasus berhasil diperbarui & tersimpan permanen!")
 
             st.divider()
             csv_data = df_sorted.to_csv(index=False).encode('utf-8')
