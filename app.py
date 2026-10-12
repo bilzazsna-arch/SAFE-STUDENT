@@ -14,10 +14,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Mendapatkan direktori folder utama tempat app.py berada secara presisi
+# Mendapatkan lokasi direktori folder utama
 DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
 
-# Fungsi Pembaca Gambar Lokal yang Akurat 100%
+# Fungsi Pembaca Gambar Lokal
 def muat_gambar_base64(nama_file):
     path_lengkap = os.path.join(DIR_UTAMA, nama_file)
     if os.path.exists(path_lengkap):
@@ -26,63 +26,78 @@ def muat_gambar_base64(nama_file):
         return base64.b64encode(data).decode()
     return None
 
-# Membaca file gambar milik Nabila (Semua PNG & Background JPG)
+# Membaca gambar-gambar asli milik Nabila
 bg_base64 = muat_gambar_base64("bg_laut.jpg")
-cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
-cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
+cewe_base64 = muat_gambar_base64("kepiting_cewek.png")
+cowo_base64 = muat_gambar_base64("kepiting_cowok.png")
 
-# CSS Kustom: Menghapus Semua Latar Polos/Putih Bawaan Streamlit
+# Import Font Estetik Google (Fredoka & Poppins) & CSS Kustom
 st.markdown(f"""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;600;700&display=swap');
+
     /* Background Laut Utama Memenuhi Seluruh Layar */
     .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url("data:image/jpg;base64,{bg_base64 if bg_base64 else ''}");
+        background-image: linear-gradient(rgba(0,0,0,0.20), rgba(0,0,0,0.20)), url("data:image/jpg;base64,{bg_base64 if bg_base64 else ''}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     
-    /* MENGHAPUS BACKGROUND POLOS DARI SELURUH ELEMEN UTAMA */
+    /* MENGHAPUS TOTAL BACKGROUND PUTIH/POLOS DI BELAKANG JUDUL DAN KONTEN ATAS */
     .main, .block-container, [data-testid="stVerticalBlock"], 
-    div[data-testid="stMarkdownContainer"], [data-testid="stHeader"], .element-container {{
+    div[data-testid="stMarkdownContainer"], [data-testid="stHeader"], .element-container, p, span, h1, h2, h3 {{
         background: transparent !important;
         background-color: transparent !important;
     }}
 
-    /* Judul Utama Menyatu Tanpa Latar Polos */
+    /* Judul Utama Tanpa Kotak Putih Menyatu Elegan */
     .main-title {{
+        font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
-        text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.95);
-        font-weight: 900;
+        text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.9);
+        font-weight: 700;
         text-align: center;
         margin-bottom: 25px;
-        font-size: 2.3rem;
+        font-size: 2.4rem;
         background: transparent !important;
     }}
 
-    /* Wadah Gambar Maskot Asli Kepiting */
-    .img-maskot-box {{
+    /* Wadah Gambar Maskot Murni Transparan (Tanpa Kotak Putih) */
+    .img-maskot-pure {{
         text-align: center;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(8px);
-        border: 2px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px;
-        padding: 12px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        background: transparent !important;
+        padding: 5px;
     }}
-    .img-maskot-box img {{
-        max-width: 100%;
+    .img-maskot-pure img {{
+        max-width: 130px;
         height: auto;
-        border-radius: 12px;
+        filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.35));
+        transition: transform 0.3s ease;
+    }}
+    .img-maskot-pure img:hover {{
+        transform: scale(1.08);
     }}
 
-    /* Kotak Pesan Sambutan Semi-Transparan */
+    /* Font Estetik Spesial untuk Nama Kema & Temo */
+    .nama-maskot-estetik {{
+        font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+        color: #FFFFFF !important;
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-top: 8px;
+        letter-spacing: 0.5px;
+        text-shadow: 2px 2px 8px rgba(3, 105, 161, 0.9), 0px 0px 10px rgba(255, 255, 255, 0.6);
+    }}
+
+    /* Kotak Pesan Sambutan Semi-Transparan Estetik */
     .speech-bubble {{
+        font-family: 'Poppins', sans-serif;
         background-color: rgba(255, 255, 255, 0.88) !important;
-        backdrop-filter: blur(8px);
-        padding: 18px 22px;
-        border-radius: 16px;
+        backdrop-filter: blur(10px);
+        padding: 20px 24px;
+        border-radius: 20px;
         border-left: 6px solid #0284C7;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
         color: #1E293B;
@@ -94,12 +109,12 @@ st.markdown(f"""
         justify-content: center;
     }}
 
-    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca */
+    /* Wadah Form & Tab Tetap Nyaman Dibaca */
     .stTabs, form, [data-testid="stForm"] {{
-        background-color: rgba(255, 255, 255, 0.90) !important;
-        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(12px);
         padding: 25px;
-        border-radius: 18px;
+        border-radius: 20px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }}
     
@@ -142,11 +157,11 @@ st.markdown(f"""
         width: 100%;
         background: linear-gradient(90deg, #0284C7 0%, #0369A1 100%);
         color: white;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 12px 20px;
         font-weight: 600;
         border: none;
-        box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -198,45 +213,45 @@ with st.sidebar:
     st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
 
 # ==========================================
-# 4. HALAMAN SISWA (GAMBAR MASKOT PNG ASLI & FITUR)
+# 4. HALAMAN SISWA (KEMA & TEMO MURNI TRANSPARAN)
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
     # Judul Bebas Latar Polos
     st.markdown("<h1 class='main-title'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
     
-    # MASKOT KEPITING CEWEK (kepiting_cewe.png) & COWOK (kepiting_cowo.png)
-    col_m1, col_text, col_m2 = st.columns([1, 2, 1])
+    # MASKOT KEMA & TEMO BERDAMPINGAN TANPA KOTAK PUTIH
+    col_m1, col_text, col_m2 = st.columns([1, 2.2, 1])
     
     with col_m1:
         if cewe_base64:
             st.markdown(f"""
-                <div class="img-maskot-box">
-                    <img src="data:image/png;base64,{cewe_base64}" width="130">
-                    <div style="color: #0369A1; font-weight: bold; margin-top: 6px;">🦀 Kepi (Cewek)</div>
+                <div class="img-maskot-pure">
+                    <img src="data:image/png;base64,{cewe_base64}">
+                    <div class="nama-maskot-estetik">🦀 Kema (Cewek)</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            st.warning("⚠️ File 'kepiting_cewe.png' belum ada di GitHub")
+            st.warning("⚠️ File 'kepiting_cewek.png' tidak ditemukan")
             
     with col_text:
         st.markdown("""
             <div class="speech-bubble">
-                <b style="font-size: 1.15rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
-                <span style="color: #334155;">Kami berdua adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
+                <b style="font-size: 1.2rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
+                <span style="color: #334155; font-size: 0.95rem;">Kami Kema & Temo adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
     with col_m2:
         if cowo_base64:
             st.markdown(f"""
-                <div class="img-maskot-box">
-                    <img src="data:image/png;base64,{cowo_base64}" width="130">
-                    <div style="color: #0369A1; font-weight: bold; margin-top: 6px;">🦀 Kepo (Cowok)</div>
+                <div class="img-maskot-pure">
+                    <img src="data:image/png;base64,{cowo_base64}">
+                    <div class="nama-maskot-estetik">🦀 Temo (Cowok)</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            st.warning("⚠️ File 'kepiting_cowo.png' belum ada di GitHub")
+            st.warning("⚠️ File 'kepiting_cowok.png' tidak ditemukan")
 
     st.write("")
     st.divider()
