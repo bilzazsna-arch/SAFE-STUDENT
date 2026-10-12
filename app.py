@@ -8,7 +8,7 @@ import os
 # 1. KONFIGURASI HALAMAN & CSS FULL CUSTOM
 # ==========================================
 st.set_page_config(
-    page_title="Curhatin - Safe Space MAN",
+    page_title="SAFE-STUDENT - MAN 2 Kudus",
     page_icon="🦀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -32,7 +32,7 @@ cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Radio Button Hitam Pekat & Ukuran Maksimal
+# CSS Kustom: Estetika Laut, Logo 6x, Kema Digeser ke Kiri, & Radio Hitam Pekat
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
@@ -67,7 +67,7 @@ st.markdown(f"""
         background: transparent !important;
     }}
     
-    /* Logo Sekolah DIPERBESAR 6 KALI & DIKEATASIN */
+    /* Logo Sekolah 6 Kali Lebih Besar & Di Atas */
     .school-logo-img {{
         width: 320px;
         height: auto;
@@ -105,7 +105,13 @@ st.markdown(f"""
         transform: scale(1.08);
     }}
 
-    /* NAMA MASKOT (KEMA & TEMO) DIPERBESAR LAGI */
+    /* Khusus Menggeser Kema ke Kiri */
+    .kema-container {{
+        position: relative;
+        left: -35px;
+    }}
+
+    /* NAMA MASKOT (KEMA & TEMO) */
     .nama-maskot-estetik {{
         font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
         color: #FFFFFF !important;
@@ -149,7 +155,6 @@ st.markdown(f"""
         font-weight: 600;
         font-size: 1.05rem;
     }}
-    /* Lingkaran Radio Button Berubah Jadi Hitam Pekat saat Aktif */
     [data-testid="stSidebar"] div[role="radio"][aria-checked="true"] {{
         background-color: rgba(0, 0, 0, 0.25) !important;
         border-radius: 10px;
@@ -209,7 +214,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Inisialisasi Database Sesi
+# Inisialisasi Database Sesi (Menyimpan Status Penanganan, Enkripsi, & Jadwal)
 if 'db_laporan' not in st.session_state:
     st.session_state.db_laporan = pd.DataFrame(columns=[
         'ID_Kasus', 'Waktu', 'Kategori', 'Isi_Laporan_Enkripsi', 'Status_Urgensi', 
@@ -244,8 +249,8 @@ def analisa_nlp_ringan(teks):
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=65)
-    st.markdown("### **Curhatin Digital MAN**")
-    st.caption("🌊 Zona Aman Pengaduan Siswa 24 Jam")
+    st.markdown("### **SAFE-STUDENT**")
+    st.caption("🌊 Layanan Konseling & Pengaduan 24 Jam MAN 2 Kudus")
     st.divider()
     
     menu = st.radio(
@@ -253,29 +258,29 @@ with st.sidebar:
         ["✨ Siswa (Curhat & Jadwal)", "🔒 Guru BK (Dashboard & Rekam Medis)"]
     )
     st.divider()
-    st.caption("🔒 *Privasi Terjamin: Data Pesan Di-enkripsi otomatis.*")
+    st.caption("🔒 *Privasi Terjamin: Data Pesan Terenkripsi & Akses Terbatas Guru BK.*")
 
 # ==========================================
 # 4. HALAMAN SISWA
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Header Rata Tengah: Logo MAN 2 Sangat Besar di Atas + Judul Utama
+    # Header Rata Tengah: Logo MAN 2 Kudus 6x Lebih Besar di Atas + Judul Utama
     logo_html = f'<img src="data:image/png;base64,{logo_base64}" class="school-logo-img"><br>' if logo_base64 else ''
     st.markdown(f"""
         <div class="header-center-box">
             {logo_html}
-            <h1 class="main-title">🦀 Curhatin Digital MAN - Safe Space</h1>
+            <h1 class="main-title">SAFE-STUDENT MAN 2 Kudus</h1>
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT KEMA & TEMO SANGAT BESAR
+    # MASKOT KEMA (Digeser ke kiri) & TEMO
     col_m1, col_text, col_m2 = st.columns([1.5, 2.5, 1.5])
     
     with col_m1:
         if cewe_base64:
             st.markdown(f"""
-                <div class="img-maskot-pure">
+                <div class="img-maskot-pure kema-container">
                     <img src="data:image/png;base64,{cewe_base64}">
                     <div class="nama-maskot-estetik">🦀 Kema</div>
                 </div>
@@ -286,8 +291,8 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     with col_text:
         st.markdown("""
             <div class="speech-bubble">
-                <b style="font-size: 1.4rem; color: #0369A1 !important;">Halo Teman-teman MAN! ✨</b><br><br>
-                <span style="color: #334155 !important; font-size: 1.1rem; line-height: 1.6;">Kami <b>Kema & Temo</b> adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
+                <b style="font-size: 1.4rem; color: #0369A1 !important;">Halo Siswa-Siswi MAN 2 Kudus! ✨</b><br><br>
+                <span style="color: #334155 !important; font-size: 1.1rem; line-height: 1.6;">Kami <b>Kema & Temo</b> siap mendampingi dan menjaga kerahasiaan ceritamu 24 jam penuh. Sampaikan curhatan atau jadwalkan konseling dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
@@ -309,6 +314,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
 
     with tab1:
         st.subheader("Formulir Curhat Anonim (Bebas & Aman)")
+        st.info("💡 Sistem enkripsi otomatis aktif untuk melindungi kerahasiaan data pengaduan Anda.")
         with st.form("form_curhat", clear_on_submit=True):
             kategori = st.selectbox(
                 "Kategori Permasalahan:",
@@ -328,7 +334,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 st.warning("Mohon isi cerita kamu terlebih dahulu ya.")
             else:
                 urgensi, skor = analisa_nlp_ringan(isi_laporan)
-                id_kasus = f"MAN-{datetime.now().strftime('%m%d%H%M%S')}"
+                id_kasus = f"MAN2KUDUS-{datetime.now().strftime('%m%d%H%M%S')}"
                 
                 data_baru = pd.DataFrame([{
                     'ID_Kasus': id_kasus,
@@ -345,10 +351,10 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 st.session_state.db_laporan = pd.concat([st.session_state.db_laporan, data_baru], ignore_index=True)
                 
                 st.balloons()
-                st.success(f"✅ Laporan berhasil dikirim melintasi samudera! Kode Rahasiamu: **{id_kasus}**")
+                st.success(f"✅ Laporan berhasil dikirim ke Guru BK MAN 2 Kudus! Kode Rahasiamu: **{id_kasus}**")
                 
                 if "MERAH" in urgensi:
-                    st.error("🚨 NOTIFIKASI BK AUTOMATED: Kasus urgensi tinggi terdeteksi! Sistem otomatis mengirim sinyal prioritas ke Guru BK.")
+                    st.error("🚨 NOTIFIKASI REAL-TIME: Kasus urgensi tinggi terdeteksi! Sistem otomatis mengirim sinyal prioritas ke Guru BK.")
 
     with tab2:
         st.subheader("Ajukan Jadwal Konseling Tatap Muka")
@@ -360,19 +366,20 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         with col_jam:
             jam_pilihan = st.time_input("Pilih Jam Konseling:", value=time(9, 0))
             
-        if st.button("Konfirmasi Jadwal Temu 📅"):
-            st.success(f"📅 Permintaan konseling tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan ke Guru BK!")
+        if st.button("Konfirmasi Pengajuan Jadwal Temu 📅"):
+            st.success(f"📅 Permintaan konseling tatap muka tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan ke Guru BK MAN 2 Kudus!")
 
 # ==========================================
 # 5. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
 # ==========================================
 elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
-    st.title("📊 Dashboard & Rekam Medis Konseling BK")
+    st.title("📊 Dashboard & Rekam Medis Konseling BK MAN 2 Kudus")
+    st.caption("🔒 Akses terbatas khusus Guru BK dengan autentikasi sandi.")
     
     passcode = st.text_input("🔑 Passcode Akses Guru BK:", type="password")
     
     if passcode == "bk123":
-        st.success("Akses Diterima. Selamat Bertugas, Bapa/Ibu Guru BK.")
+        st.success("Akses Diterima. Selamat Bertugas, Bapa/Ibu Guru BK MAN 2 Kudus.")
         st.divider()
         
         df = st.session_state.db_laporan
@@ -393,31 +400,31 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
         st.subheader("📋 Rekam Medis & Manajemen Kasus Siswa")
         
         if df.empty:
-            st.info("Belum ada laporan siswa yang masuk di samudera digital ini.")
+            st.info("Belum ada laporan siswa yang masuk di sistem.")
         else:
             df_sorted = df.sort_values(by='Skor_Urgensi', ascending=False)
             
             for idx, row in df_sorted.iterrows():
                 with st.expander(f"[{row['Status_Urgensi']}] {row['ID_Kasus']} - {row['Kategori']} ({row['Waktu']})"):
-                    st.write("**Isi Laporan Siswa:**")
+                    st.write("**Isi Laporan Siswa (Terenkripsi):**")
                     st.write(f"_{row['Isi_Laporan_Enkripsi']}_")
                     
                     st.divider()
-                    st.write("**Catatan Rekam Medis Konseling (Khusus BK):**")
+                    st.write("**Catatan Rekam Medis Konseling & Konfirmasi Jadwal (Khusus BK):**")
                     catatan_baru = st.text_area(f"Catatan / Hasil Konseling #{row['ID_Kasus']}:", value=row['Catatan_Rekam_Medis_BK'], key=f"notes_{idx}")
                     status_baru = st.selectbox(f"Status Kasus #{row['ID_Kasus']}:", ["Baru", "Prosedur Konseling", "Tindak Lanjut", "Selesai"], key=f"status_{idx}")
                     
                     if st.button("Simpan Rekam Medis 💾", key=f"btn_{idx}"):
                         st.session_state.db_laporan.at[idx, 'Catatan_Rekam_Medis_BK'] = catatan_baru
                         st.session_state.db_laporan.at[idx, 'Status_Kasus'] = status_baru
-                        st.success("Rekam medis berhasil diperbarui!")
+                        st.success("Rekam medis dan status kasus berhasil diperbarui!")
 
             st.divider()
             csv_data = df_sorted.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
-                file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
+                file_name=f"Rekap_BK_MAN2Kudus_{datetime.now().strftime('%Y%m%d')}.csv",
                 mime="text/csv"
             )
             
