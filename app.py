@@ -31,7 +31,7 @@ bg_base64 = muat_gambar_base64("bg_laut.jpg")
 cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 
-# Import Font Estetik Google (Fredoka & Poppins) & CSS Kustom Tanpa Kotak Putih
+# CSS Kustom: Menghapus Total Background Putih pada Seluruh Elemen Teks
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Poppins:wght@400;600;700&display=swap');
@@ -45,18 +45,20 @@ st.markdown(f"""
         background-attachment: fixed;
     }}
     
-    /* MENGHAPUS TOTAL BACKGROUND PUTIH/POLOS DI BELAKANG JUDUL DAN KONTEN ATAS */
+    /* MENGHAPUS SEMUA BACKGROUND PUTIH/TRANSPARAN PADA SELURUH WADAH & TEKS */
     .main, .block-container, [data-testid="stVerticalBlock"], 
-    div[data-testid="stMarkdownContainer"], [data-testid="stHeader"], .element-container, p, span, h1, h2, h3 {{
+    div[data-testid="stMarkdownContainer"], [data-testid="stHeader"], 
+    .element-container, p, span, h1, h2, h3, b, strong, div {{
         background: transparent !important;
         background-color: transparent !important;
+        box-shadow: none !important;
     }}
 
-    /* Judul Utama Tanpa Kotak Putih Menyatu Elegan */
+    /* Judul Utama Tanpa Latar Putih Menyatu Elegan di Atas Laut */
     .main-title {{
         font-family: 'Fredoka', 'Poppins', sans-serif;
         color: #FFFFFF !important;
-        text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.9);
+        text-shadow: 3px 3px 14px rgba(0, 0, 0, 0.95);
         font-weight: 700;
         text-align: center;
         margin-bottom: 25px;
@@ -64,7 +66,7 @@ st.markdown(f"""
         background: transparent !important;
     }}
 
-    /* Wadah Gambar Maskot Murni Transparan Tanpa Kotak Putih di Belakangnya */
+    /* Wadah Gambar Maskot Transparan */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
@@ -73,25 +75,26 @@ st.markdown(f"""
     .img-maskot-pure img {{
         max-width: 130px;
         height: auto;
-        filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.35));
+        filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.4));
         transition: transform 0.3s ease;
     }}
     .img-maskot-pure img:hover {{
         transform: scale(1.08);
     }}
 
-    /* Font Estetik Spesial untuk Nama Kema & Temo */
+    /* Font Estetik Spesial untuk Nama Kema & Temo Tanpa Latar Belakang */
     .nama-maskot-estetik {{
         font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
         color: #FFFFFF !important;
-        font-size: 1.35rem;
+        font-size: 1.4rem;
         font-weight: 700;
         margin-top: 8px;
         letter-spacing: 0.5px;
-        text-shadow: 2px 2px 8px rgba(3, 105, 161, 0.9), 0px 0px 10px rgba(255, 255, 255, 0.6);
+        text-shadow: 2px 2px 8px rgba(3, 105, 161, 0.95), 0px 0px 10px rgba(255, 255, 255, 0.7);
+        background: transparent !important;
     }}
 
-    /* Kotak Pesan Sambutan Semi-Transparan Estetik */
+    /* Kotak Pesan Sambutan Kaca Semi-Transparan Rapi (Tanpa Sorot Putih di Teks Dalamnya) */
     .speech-bubble {{
         font-family: 'Poppins', sans-serif;
         background-color: rgba(255, 255, 255, 0.88) !important;
@@ -99,8 +102,8 @@ st.markdown(f"""
         padding: 20px 24px;
         border-radius: 20px;
         border-left: 6px solid #0284C7;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-        color: #1E293B;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+        color: #1E293B !important;
         text-align: center;
         font-weight: 600;
         height: 100%;
@@ -108,19 +111,23 @@ st.markdown(f"""
         flex-direction: column;
         justify-content: center;
     }}
+    .speech-bubble b, .speech-bubble span {{
+        background: transparent !important;
+        color: #1E293B !important;
+    }}
 
-    /* Wadah Form & Tab Tetap Nyaman Dibaca */
+    /* Wadah Form & Tab Tetap Bersih & Nyaman Dibaca */
     .stTabs, form, [data-testid="stForm"] {{
         background-color: rgba(255, 255, 255, 0.92) !important;
         backdrop-filter: blur(12px);
         padding: 25px;
         border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
     }}
     
     /* Sidebar Nuansa Laut Dalam */
     [data-testid="stSidebar"] {{
-        background-color: rgba(3, 105, 161, 0.95);
+        background-color: rgba(3, 105, 161, 0.95) !important;
         color: white;
     }}
     [data-testid="stSidebar"] .stRadio label {{
@@ -133,10 +140,10 @@ st.markdown(f"""
 
     /* Card Dashboard BK */
     .metric-card {{
-        background-color: #FFFFFF;
+        background-color: #FFFFFF !important;
         border-radius: 12px;
         padding: 15px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
         border: 1px solid #7DD3FC;
         text-align: center;
         margin-bottom: 10px;
@@ -144,10 +151,10 @@ st.markdown(f"""
     .metric-value {{
         font-size: 1.6rem;
         font-weight: 700;
-        color: #0369A1;
+        color: #0369A1 !important;
     }}
     .metric-label {{
-        color: #475569;
+        color: #475569 !important;
         font-size: 0.8rem;
         font-weight: 600;
     }}
@@ -156,12 +163,12 @@ st.markdown(f"""
     .stButton>button {{
         width: 100%;
         background: linear-gradient(90deg, #0284C7 0%, #0369A1 100%);
-        color: white;
+        color: white !important;
         border-radius: 12px;
         padding: 12px 20px;
         font-weight: 600;
         border: none;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35) !important;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -220,7 +227,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     # Judul Bebas Latar Polos
     st.markdown("<h1 class='main-title'>🦀 Curhatin Digital MAN - Safe Space</h1>", unsafe_allow_html=True)
     
-    # MASKOT KEMA & TEMO BERDAMPINGAN MURNI TRANSPARAN TANPA KOTAK PUTIH DI BELAKANGNYA
+    # MASKOT KEMA & TEMO BERDAMPINGAN MURNI TRANSPARAN
     col_m1, col_text, col_m2 = st.columns([1, 2.2, 1])
     
     with col_m1:
@@ -237,8 +244,8 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
     with col_text:
         st.markdown("""
             <div class="speech-bubble">
-                <b style="font-size: 1.2rem; color: #0369A1;">Halo Teman-teman MAN! ✨</b><br>
-                <span style="color: #334155; font-size: 0.95rem;">Kami Kema & Temo adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
+                <b style="font-size: 1.2rem; color: #0369A1 !important;">Halo Teman-teman MAN! ✨</b><br>
+                <span style="color: #334155 !important; font-size: 0.95rem;">Kami Kema & Temo adalah penjaga kerahasiaan ceritamu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim! 🌊</span>
             </div>
         """, unsafe_allow_html=True)
         
@@ -333,12 +340,12 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
             st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(df)}</div><div class='metric-label'>Total Kasus</div></div>", unsafe_allow_html=True)
         with c2:
             merah = len(df[df['Status_Urgensi'].str.contains("MERAH", na=False)])
-            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#EF4444;'>{merah}</div><div class='metric-label'>Urgensi Tinggi</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#EF4444 !important;'>{merah}</div><div class='metric-label'>Urgensi Tinggi</div></div>", unsafe_allow_html=True)
         with c3:
             kuning = len(df[df['Status_Urgensi'].str.contains("KUNING", na=False)])
-            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#F59E0B;'>{kuning}</div><div class='metric-label'>Urgensi Sedang</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#F59E0B !important;'>{kuning}</div><div class='metric-label'>Urgensi Sedang</div></div>", unsafe_allow_html=True)
         with c4:
-            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#10B981;'>{len(df)-merah-kuning}</div><div class='metric-label'>Urgensi Rendah</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#10B981 !important;'>{len(df)-merah-kuning}</div><div class='metric-label'>Urgensi Rendah</div></div>", unsafe_allow_html=True)
 
         st.divider()
         st.subheader("📋 Rekam Medis & Manajemen Kasus Siswa")
@@ -369,7 +376,7 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
                 label="📥 Download Rekapitulasi Lengkap (CSV)",
                 data=csv_data,
                 file_name=f"Rekap_BK_MAN_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/css"
+                mime="text/csv"
             )
             
     elif passcode != "":
