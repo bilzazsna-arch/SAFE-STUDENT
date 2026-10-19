@@ -22,6 +22,8 @@ DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
 FILE_DATABASE = os.path.join(DIR_UTAMA, "db_laporan.csv")
 FILE_JADWAL = os.path.join(DIR_UTAMA, "db_jadwal.csv")
 
+EMAIL_GURU_BK = "bilzazsna@gmail.com"
+
 # Fungsi Pembaca Gambar Lokal ke Base64
 def muat_gambar_base64(nama_file):
     path_lengkap = os.path.join(DIR_UTAMA, nama_file)
@@ -31,7 +33,7 @@ def muat_gambar_base64(nama_file):
         return base64.b64encode(data).decode()
     return None
 
-# Membaca file gambar pendukung (Kema dihilangkan, sisa Temo)
+# Membaca file gambar pendukung
 bg_base64 = muat_gambar_base64("bg_laut.jpg")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
@@ -110,7 +112,7 @@ st.markdown(f"""
         border: 2px solid #FFFFFF;
     }}
 
-    /* Maskot Temo Tunggal di Tengah/Kanan */
+    /* Maskot Temo Tunggal di Tengah */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
@@ -254,34 +256,21 @@ if 'db_jadwal' not in st.session_state or st.session_state.db_jadwal.empty:
 # ==========================================
 # 3. FUNGSI KIRIM EMAIL OTOMATIS
 # ==========================================
-def kirim_email_notifikasi(email_penerima, status_konfirmasi, tanggal, jam):
+def kirim_email_notifikasi(email_penerima, subjek, isi_pesan):
     try:
-        # Konfigurasi SMTP (bisa disesuaikan dengan email resmi sekolah/pengembang)
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
-        sender_email = "safestudent.man2kudus@gmail.com" # Contoh email pengirim
-        sender_password = "password_aplikasi_anda" # Ganti dengan App Password Gmail jika dipakai
+        sender_email = EMAIL_GURU_BK
+        sender_password = "password_aplikasi_anda" # Ganti dengan App Password Gmail jika sudah diatur
         
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = email_penerima
-        msg['Subject'] = f"Konfirmasi Jadwal Konseling BK MAN 2 Kudus - {status_konfirmasi}"
+        msg['Subject'] = subjek
         
-        body = f"""
-        Halo,
+        msg.attach(MIMEText(isi_pesan, 'plain'))
         
-        Pengajuan jadwal konseling tatap muka Anda di SAFE-STUDENT MAN 2 Kudus pada:
-        Tanggal: {tanggal}
-        Jam: {jam} WIB
-        
-        Telah dikonfirmasi oleh Guru BK dengan status: **{status_konfirmasi.upper()}**.
-        
-        Terima kasih,
-        Layanan Bimbingan dan Konseling MAN 2 Kudus
-        """
-        msg.attach(MIMEText(body, 'plain'))
-        
-        # Simulasi pengiriman (jika credentials belum diset, dilewati agar tidak error)
+        # Jalankan SMTP jika password telah dikonfigurasi
         # server = smtplib.SMTP(smtp_server, smtp_port)
         # server.starttls()
         # server.login(sender_email, sender_password)
@@ -410,8 +399,13 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 st.session_state.db_laporan = pd.concat([st.session_state.db_laporan, data_baru], ignore_index=True)
                 simpan_database_laporan(st.session_state.db_laporan)
                 
+                # Kirim Notifikasi Email Otomatis ke Guru BK
+                subjek_bk = f"🔔 [Laporan Baru #{id_kasus}] {urgensi} - SAFE-STUDENT"
+                pesan_bk = f"Ada laporan anonim baru yang masuk di SAFE-STUDENT MAN 2 Kudus:\n\nID Kasus: {id_kasus}\nKategori: {kategori}\nUrgensi: {urgensi}\nWaktu: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\nSilakan cek Dashboard Guru BK untuk detail lebih lanjut."
+                kirim_email_notifikasi(EMAIL_GURU_BK, subjek_bk, pesan_bk)
+                
                 st.balloons()
-                st.success(f"✅ Laporan Anda telah tersimpan dan terenkripsi dalam sistem! Kode Referensi Anda: **{id_kasus}**")
+                st.success(f"✅ Laporan Anda telah tersimpan dan terenkripsi! Notifikasi telah dikirim ke Guru BK. Kode Referensi: **{id_kasus}**")
                 
                 if "MERAH" in urgensi:
                     st.error("🚨 DETEKSI NLP SYSTEM: Indikasi permasalahan urgensi tinggi terdeteksi. Sinyal prioritas otomatis diteruskan ke Guru BK.")
@@ -445,7 +439,13 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 
                 st.session_state.db_jadwal = pd.concat([st.session_state.db_jadwal, jadwal_baru], ignore_index=True)
                 simpan_database_jadwal(st.session_state.db_jadwal)
-                st.success(f"📅 Permintaan konseling tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan ke Guru BK!")
+                
+                # Kirim Notifikasi Email Otomatis ke Guru BK
+                subjek_bk = f"📅 [Jadwal Baru #{id_jadwal}] Pengajuan Konseling Siswa"
+                pesan_bk = f"Ada pengajuan jadwal konseling baru dari siswa:\n\nEmail Siswa: {email_siswa}\nTanggal: {tgl_pilihan}\nJam: {jam_pilihan.strftime('%H:%M')} WIB\n\nSilakan konfirmasi di Dashboard Guru BK."
+                kirim_email_notifikasi(EMAIL_GURU_BK, subjek_bk, pesan_bk)
+                
+                st.success(f"📅 Permintaan konseling tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan! Notifikasi otomatis telah dikirim ke Guru BK.")
 
 # ==========================================
 # 7. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
@@ -465,7 +465,6 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
         df = st.session_state.db_laporan
         df_jdw = st.session_state.db_jadwal
         
-        # Notifikasi Otomatis di Dashboard untuk Jadwal Menunggu
         pending_count = len(df_jdw[df_jdw['Status_Konfirmasi'] == 'Menunggu Konfirmasi BK']) if not df_jdw.empty else 0
         if pending_count > 0:
             st.warning(f"🔔 **NOTIFIKASI OTOMATIS:** Ada **{pending_count} pengajuan jadwal konseling baru** dari siswa yang menunggu konfirmasi Anda!")
@@ -490,9 +489,4 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
         else:
             for idx_j, row_j in df_jdw.iterrows():
                 with st.container():
-                    col_info, col_aksi = st.columns([2, 2])
-                    with col_info:
-                        st.write(f"**ID:** {row_j['ID_Jadwal']} | **Email:** {row_j['Email_Siswa']}")
-                        st.write(f"**Waktu:** {row_j['Tanggal']} pukul {row_j['Jam']} WIB | **Status:** `{row_j['Status_Konfirmasi']}`")
-                    with col_aksi:
-                        pilihan_konfirm
+                    col
