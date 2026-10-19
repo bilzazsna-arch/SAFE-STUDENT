@@ -261,21 +261,13 @@ def kirim_email_notifikasi(email_penerima, subjek, isi_pesan):
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
         sender_email = EMAIL_GURU_BK
-        sender_password = "password_aplikasi_anda" # Ganti dengan App Password Gmail jika sudah diatur
+        sender_password = "password_aplikasi_anda"
         
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = email_penerima
         msg['Subject'] = subjek
-        
         msg.attach(MIMEText(isi_pesan, 'plain'))
-        
-        # Jalankan SMTP jika password telah dikonfigurasi
-        # server = smtplib.SMTP(smtp_server, smtp_port)
-        # server.starttls()
-        # server.login(sender_email, sender_password)
-        # server.sendmail(sender_email, email_penerima, msg.as_string())
-        # server.quit()
         return True
     except Exception as e:
         return False
@@ -336,7 +328,6 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT TEMO TUNGGAL DI TENGAH
     col_m1, col_text, col_m2 = st.columns([1, 2.5, 1])
     
     with col_text:
@@ -399,9 +390,8 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 st.session_state.db_laporan = pd.concat([st.session_state.db_laporan, data_baru], ignore_index=True)
                 simpan_database_laporan(st.session_state.db_laporan)
                 
-                # Kirim Notifikasi Email Otomatis ke Guru BK
                 subjek_bk = f"🔔 [Laporan Baru #{id_kasus}] {urgensi} - SAFE-STUDENT"
-                pesan_bk = f"Ada laporan anonim baru yang masuk di SAFE-STUDENT MAN 2 Kudus:\n\nID Kasus: {id_kasus}\nKategori: {kategori}\nUrgensi: {urgensi}\nWaktu: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\nSilakan cek Dashboard Guru BK untuk detail lebih lanjut."
+                pesan_bk = f"Ada laporan anonim baru yang masuk di SAFE-STUDENT MAN 2 Kudus:\n\nID Kasus: {id_kasus}\nKategori: {kategori}\nUrgensi: {urgensi}\nWaktu: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\nSilakan cek Dashboard Guru BK."
                 kirim_email_notifikasi(EMAIL_GURU_BK, subjek_bk, pesan_bk)
                 
                 st.balloons()
@@ -440,7 +430,6 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 st.session_state.db_jadwal = pd.concat([st.session_state.db_jadwal, jadwal_baru], ignore_index=True)
                 simpan_database_jadwal(st.session_state.db_jadwal)
                 
-                # Kirim Notifikasi Email Otomatis ke Guru BK
                 subjek_bk = f"📅 [Jadwal Baru #{id_jadwal}] Pengajuan Konseling Siswa"
                 pesan_bk = f"Ada pengajuan jadwal konseling baru dari siswa:\n\nEmail Siswa: {email_siswa}\nTanggal: {tgl_pilihan}\nJam: {jam_pilihan.strftime('%H:%M')} WIB\n\nSilakan konfirmasi di Dashboard Guru BK."
                 kirim_email_notifikasi(EMAIL_GURU_BK, subjek_bk, pesan_bk)
@@ -489,4 +478,11 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
         else:
             for idx_j, row_j in df_jdw.iterrows():
                 with st.container():
-                    col
+                    col_info, col_aksi = st.columns([2, 2])
+                    with col_info:
+                        st.write(f"**ID:** {row_j['ID_Jadwal']} | **Email:** {row_j['Email_Siswa']}")
+                        st.write(f"**Waktu:** {row_j['Tanggal']} pukul {row_j['Jam']} WIB | **Status:** `{row_j['Status_Konfirmasi']}`")
+                    with col_aksi:
+                        current_status = str(row_j['Status_Konfirmasi'])
+                        status_options = ["Menunggu Konfirmasi BK", "Diterima", "Ditolak"]
+                        default_idx =
