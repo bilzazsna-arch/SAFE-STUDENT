@@ -420,4 +420,65 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 simpan_database_jadwal(st.session_state.db_jadwal)
                 
                 subjek_bk = f"📅 [Jadwal Baru #{id_jadwal}] Pengajuan Konseling Siswa"
-                pesan_bk = f"Ada pengajuan jadwal konseling baru dari
+                pesan_bk = f"Ada pengajuan jadwal konseling baru dari siswa:\n\nEmail Siswa: {email_siswa}\nTanggal: {tgl_pilihan}\nJam: {jam_pilihan.strftime('%H:%M')} WIB\n\nSilakan konfirmasi di Dashboard Guru BK."
+                kirim_email_notifikasi(EMAIL_GURU_BK, subjek_bk, pesan_bk)
+                
+                st.success(f"📅 Permintaan konseling tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan! Notifikasi otomatis telah dikirim ke Guru BK.")
+
+# ==========================================
+# 7. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
+# ==========================================
+elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
+    st.title("📊 Dashboard & Rekam Data Konseling Guru BK")
+    st.caption("🔒 Pengelolaan terintegrasi: Rekap laporan, deteksi NLP, konfirmasi jadwal, dan rekam data siswa.")
+    
+    passcode = st.text_input("🔑 Kata Sandi Autentikasi Guru BK:", type="password")
+    
+    if passcode == "bk123":
+        st.success("Autentikasi berhasil. Selamat bertugas, Bapak/Ibu Guru BK MAN 2 Kudus.")
+        st.divider()
+        
+        st.session_state.db_laporan = muat_database_laporan()
+        st.session_state.db_jadwal = muat_database_jadwal()
+        df = st.session_state.db_laporan
+        df_jdw = st.session_state.db_jadwal
+        
+        pending_count = len(df_jdw[df_jdw['Status_Konfirmasi'] == 'Menunggu Konfirmasi BK']) if not df_jdw.empty else 0
+        if pending_count > 0:
+            st.warning(f"🔔 **NOTIFIKASI OTOMATIS:** Ada **{pending_count} pengajuan jadwal konseling baru** dari siswa yang menunggu konfirmasi Anda!")
+
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(df)}</div><div class='metric-label'>Total Laporan Masuk</div></div>", unsafe_allow_html=True)
+        with c2:
+            merah = len(df[df['Status_Urgensi'].str.contains("MERAH", na=False)]) if not df.empty else 0
+            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#EF4444 !important;'>{merah}</div><div class='metric-label'>Urgensi Tinggi (NLP)</div></div>", unsafe_allow_html=True)
+        with c3:
+            kuning = len(df[df['Status_Urgensi'].str.contains("KUNING", na=False)]) if not df.empty else 0
+            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#F59E0B !important;'>{kuning}</div><div class='metric-label'>Urgensi Sedang (NLP)</div></div>", unsafe_allow_html=True)
+        with c4:
+            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#10B981 !important;'>{len(df)-merah-kuning}</div><div class='metric-label'>Urgensi Rendah</div></div>", unsafe_allow_html=True)
+
+        st.divider()
+        st.subheader("📅 Kelola & Konfirmasi Pengajuan Jadwal Konseling Siswa")
+        
+        if df_jdw.empty:
+            st.info("Belum ada pengajuan jadwal konseling dari siswa.")
+        else:
+            for idx_j, row_j in df_jdw.iterrows():
+                with st.container():
+                    col_info, col_aksi = st.columns([2, 2])
+                    with col_info:
+                        st.write(f"**ID:** {row_j['ID_Jadwal']} | **Email:** {row_j['Email_Siswa']}")
+                        st.write(f"**Waktu:** {row_j['Tanggal']} pukul {row_j['Jam']} WIB | **Status:** `{row_j['Status_Konfirmasi']}`")
+                    with col_aksi:
+                        current_status = str(row_j['Status_Konfirmasi'])
+                        status_options = ["Menunggu Konfirmasi BK", "Diterima", "Ditolak"]
+                        default_idx = status_options.index(current_status) if current_status in status_options else 0
+                        
+                        pilihan_konfirmasi = st.selectbox(
+                            "Ubah Status:", 
+                            status_options, 
+                            index=default_idx,
+                            key=f"status_jdw_{idx_j}"
+                        
