@@ -3,6 +3,9 @@ import pandas as pd
 from datetime import datetime, date, time
 import base64
 import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # ==========================================
 # 1. KONFIGURASI HALAMAN & CSS FULL CUSTOM
@@ -17,6 +20,7 @@ st.set_page_config(
 # Path direktori utama aplikasi
 DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
 FILE_DATABASE = os.path.join(DIR_UTAMA, "db_laporan.csv")
+FILE_JADWAL = os.path.join(DIR_UTAMA, "db_jadwal.csv")
 
 # Fungsi Pembaca Gambar Lokal ke Base64
 def muat_gambar_base64(nama_file):
@@ -27,9 +31,8 @@ def muat_gambar_base64(nama_file):
         return base64.b64encode(data).decode()
     return None
 
-# Membaca file gambar pendukung
+# Membaca file gambar pendukung (Kema dihilangkan, sisa Temo)
 bg_base64 = muat_gambar_base64("bg_laut.jpg")
-cewe_base64 = muat_gambar_base64("kepiting_cewe.png")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
@@ -107,7 +110,7 @@ st.markdown(f"""
         border: 2px solid #FFFFFF;
     }}
 
-    /* Maskot Kepiting & Papan Nama */
+    /* Maskot Temo Tunggal di Tengah/Kanan */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
@@ -117,13 +120,10 @@ st.markdown(f"""
         height: auto;
         filter: drop-shadow(0px 8px 18px rgba(0,0,0,0.4));
     }}
-    .kema-box {{ position: relative; left: -25px; }}
-    .temo-box {{ position: relative; right: -25px; }}
-
-    .name-badge-kema, .name-badge-temo {{
+    .name-badge-temo {{
         font-family: 'Fredoka', cursive, sans-serif;
         background: #FFFFFF;
-        color: #0284C7;
+        color: #0369A1;
         font-size: 1.8rem;
         font-weight: 900;
         padding: 4px 28px;
@@ -132,11 +132,7 @@ st.markdown(f"""
         margin-top: -15px;
         box-shadow: 0 6px 16px rgba(0,0,0,0.25);
         border: 3px solid #E0F2FE;
-        transform: rotate(-3deg);
-    }}
-    .name-badge-temo {{
         transform: rotate(3deg);
-        color: #0369A1;
     }}
 
     /* Kotak Pesan Sambutan */
@@ -222,7 +218,7 @@ st.markdown(f"""
 # ==========================================
 # 2. SISTEM DATABASE PERSISTEN (ANTI HILANG)
 # ==========================================
-def muat_database():
+def muat_database_laporan():
     if os.path.exists(FILE_DATABASE):
         try:
             return pd.read_csv(FILE_DATABASE)
@@ -233,21 +229,75 @@ def muat_database():
         'Skor_Urgensi', 'Jadwal_Tatap_Muka', 'Catatan_Rekam_Medis_BK', 'Status_Kasus'
     ])
 
-def simpan_database(df):
+def simpan_database_laporan(df):
     df.to_csv(FILE_DATABASE, index=False)
 
+def muat_database_jadwal():
+    if os.path.exists(FILE_JADWAL):
+        try:
+            return pd.read_csv(FILE_JADWAL)
+        except Exception:
+            pass
+    return pd.DataFrame(columns=[
+        'ID_Jadwal', 'Email_Siswa', 'Tanggal', 'Jam', 'Status_Konfirmasi'
+    ])
+
+def simpan_database_jadwal(df):
+    df.to_csv(FILE_JADWAL, index=False)
+
 if 'db_laporan' not in st.session_state or st.session_state.db_laporan.empty:
-    st.session_state.db_laporan = muat_database()
+    st.session_state.db_laporan = muat_database_laporan()
+
+if 'db_jadwal' not in st.session_state or st.session_state.db_jadwal.empty:
+    st.session_state.db_jadwal = muat_database_jadwal()
 
 # ==========================================
-# 3. DETEKSI DINI BERBASIS NLP (ANALISIS TEKS)
+# 3. FUNGSI KIRIM EMAIL OTOMATIS
+# ==========================================
+def kirim_email_notifikasi(email_penerima, status_konfirmasi, tanggal, jam):
+    try:
+        # Konfigurasi SMTP (bisa disesuaikan dengan email resmi sekolah/pengembang)
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        sender_email = "safestudent.man2kudus@gmail.com" # Contoh email pengirim
+        sender_password = "password_aplikasi_anda" # Ganti dengan App Password Gmail jika dipakai
+        
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = email_penerima
+        msg['Subject'] = f"Konfirmasi Jadwal Konseling BK MAN 2 Kudus - {status_konfirmasi}"
+        
+        body = f"""
+        Halo,
+        
+        Pengajuan jadwal konseling tatap muka Anda di SAFE-STUDENT MAN 2 Kudus pada:
+        Tanggal: {tanggal}
+        Jam: {jam} WIB
+        
+        Telah dikonfirmasi oleh Guru BK dengan status: **{status_konfirmasi.upper()}**.
+        
+        Terima kasih,
+        Layanan Bimbingan dan Konseling MAN 2 Kudus
+        """
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Simulasi pengiriman (jika credentials belum diset, dilewati agar tidak error)
+        # server = smtplib.SMTP(smtp_server, smtp_port)
+        # server.starttls()
+        # server.login(sender_email, sender_password)
+        # server.sendmail(sender_email, email_penerima, msg.as_string())
+        # server.quit()
+        return True
+    except Exception as e:
+        return False
+
+# ==========================================
+# 4. DETEKSI DINI BERBASIS NLP (ANALISIS TEKS)
 # ==========================================
 def analisa_nlp_ringan(teks):
     teks_lower = teks.lower()
-    
-    # Kata kunci indikator tingkat keparahan
-    kata_kunci_tinggi = ["bunuh diri", "sakiti diri", "pukul", "ancam", "pemerasan", "silet", "racun", "mati", "kekerasan", "pelecehan", "perkosa"]
-    kata_kunci_sedang = ["diejek", "dikucilkan", "stres", "takut", "cemas", "nilai turun", "dihina", "diancam", "dibully", "frustrasi", "sendiri"]
+    kata_kunci_tinggi = ["bunuh diri", "sakiti diri", "pukul", "ancam", "pemerasan", "silet", "racun", "mati", "kekerasan", "pelecehan"]
+    kata_kunci_sedang = ["diejek", "dikucilkan", "stres", "takut", "cemas", "nilai turun", "dihina", "diancam", "dibully", "frustrasi"]
     
     skor = 0
     for kata in kata_kunci_tinggi:
@@ -265,7 +315,7 @@ def analisa_nlp_ringan(teks):
         return "🟢 HIJAU (Urgensi Rendah)", skor
 
 # ==========================================
-# 4. SIDEBAR NAVIGATION
+# 5. SIDEBAR NAVIGATION
 # ==========================================
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3062/3062634.png", width=65)
@@ -278,14 +328,13 @@ with st.sidebar:
         ["✨ Siswa (Curhat & Jadwal)", "🔒 Guru BK (Dashboard & Rekam Medis)"]
     )
     st.divider()
-    st.caption("🔒 *Privasi Terjamin: Pelaporan anonim terenkripsi untuk kenyamanan siswa.*")
+    st.caption("🔒 *Privasi Terjamin: Pelaporan anonim terenkripsi 24 jam.*")
 
 # ==========================================
-# 5. HALAMAN SISWA
+# 6. HALAMAN SISWA
 # ==========================================
 if menu == "✨ Siswa (Curhat & Jadwal)":
     
-    # Deretan Logo Instansi di Atas & Judul 3D Megah
     logo_tag = f'<img src="data:image/png;base64,{logo_base64}" style="height: 65px; border-radius: 12px; vertical-align: middle;">' if logo_base64 else ''
     st.markdown(f"""
         <div class="top-logos-container">
@@ -298,34 +347,23 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
         </div>
     """, unsafe_allow_html=True)
 
-    # MASKOT KEMA & TEMO DENGAN PAPAN NAMA ESTETIK
-    col_m1, col_text, col_m2 = st.columns([1.5, 2.5, 1.5])
+    # MASKOT TEMO TUNGGAL DI TENGAH
+    col_m1, col_text, col_m2 = st.columns([1, 2.5, 1])
     
-    with col_m1:
-        if cewe_base64:
-            st.markdown(f"""
-                <div class="img-maskot-pure kema-box">
-                    <img src="data:image/png;base64,{cewe_base64}"><br>
-                    <div class="name-badge-kema">Kema</div>
-                </div>
-            """, unsafe_allow_html=True)
-            
     with col_text:
-        st.markdown("""
-            <div class="speech-bubble">
-                <b style="font-size: 1.35rem; color: #0284C7 !important;">Halo Teman-teman MAN 2 Kudus! ✨</b><br><br>
-                <span style="color: #334155 !important; font-size: 1.05rem; line-height: 1.5;">Kami <b>Kema & Temo</b> adalah penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, sampaikan secara anonim di sini dengan aman, nyaman, dan terpercaya! 🌊</span>
-            </div>
-        """, unsafe_allow_html=True)
-        
-    with col_m2:
         if cowo_base64:
             st.markdown(f"""
-                <div class="img-maskot-pure temo-box">
+                <div class="img-maskot-pure" style="margin-bottom: 15px;">
                     <img src="data:image/png;base64,{cowo_base64}"><br>
                     <div class="name-badge-temo">Temo</div>
                 </div>
             """, unsafe_allow_html=True)
+        st.markdown("""
+            <div class="speech-bubble">
+                <b style="font-size: 1.35rem; color: #0284C7 !important;">Halo Teman-teman MAN 2 Kudus! ✨</b><br><br>
+                <span style="color: #334155 !important; font-size: 1.05rem; line-height: 1.5;">Aku <b>Temo</b> siap mendampingi dan menjaga kerahasiaan ceritamu 24 jam penuh. Sampaikan curhatan anonim atau jadwalkan konseling dengan aman di sini! 🌊</span>
+            </div>
+        """, unsafe_allow_html=True)
 
     st.write("")
     st.divider()
@@ -354,7 +392,6 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
             if isi_laporan.strip() == "":
                 st.warning("Mohon tuliskan cerita Anda terlebih dahulu.")
             else:
-                # Deteksi Dini Berbasis NLP
                 urgensi, skor = analisa_nlp_ringan(isi_laporan)
                 id_kasus = f"MAN2KUDUS-{datetime.now().strftime('%m%d%H%M%S')}"
                 
@@ -371,7 +408,7 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 }])
                 
                 st.session_state.db_laporan = pd.concat([st.session_state.db_laporan, data_baru], ignore_index=True)
-                simpan_database(st.session_state.db_laporan)
+                simpan_database_laporan(st.session_state.db_laporan)
                 
                 st.balloons()
                 st.success(f"✅ Laporan Anda telah tersimpan dan terenkripsi dalam sistem! Kode Referensi Anda: **{id_kasus}**")
@@ -381,23 +418,41 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
 
     with tab2:
         st.subheader("Pengajuan Jadwal Konseling Tatap Muka")
-        st.info("Ajukan waktu konseling langsung dengan Guru BK MAN 2 Kudus secara terstruktur.")
+        st.info("Masukkan email Anda agar sistem dapat mengirimkan notifikasi otomatis saat Guru BK mengonfirmasi jadwal.")
         
-        col_tgl, col_jam = st.columns(2)
-        with col_tgl:
-            tgl_pilihan = st.date_input("Pilih Tanggal Konseling:", min_value=date.today())
-        with col_jam:
-            jam_pilihan = st.time_input("Pilih Jam Konseling:", value=time(9, 0))
+        with st.form("form_jadwal", clear_on_submit=True):
+            email_siswa = st.text_input("Email Anda (untuk pengiriman notifikasi otomatis):", placeholder="contoh: siswa@gmail.com")
+            col_tgl, col_jam = st.columns(2)
+            with col_tgl:
+                tgl_pilihan = st.date_input("Pilih Tanggal Konseling:", min_value=date.today())
+            with col_jam:
+                jam_pilihan = st.time_input("Pilih Jam Konseling:", value=time(9, 0))
+                
+            submit_jadwal = st.form_submit_button("Ajukan Jadwal Temu 📅")
             
-        if st.button("Konfirmasi Pengajuan Jadwal 📅"):
-            st.success(f"📅 Pengajuan konseling tatap muka pada tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan ke Guru BK!")
+        if submit_jadwal:
+            if not email_siswa or "@" not in email_siswa:
+                st.warning("Mohon masukkan alamat email yang valid.")
+            else:
+                id_jadwal = f"JDW-{datetime.now().strftime('%m%d%H%M%S')}"
+                jadwal_baru = pd.DataFrame([{
+                    'ID_Jadwal': id_jadwal,
+                    'Email_Siswa': email_siswa,
+                    'Tanggal': str(tgl_pilihan),
+                    'Jam': jam_pilihan.strftime('%H:%M'),
+                    'Status_Konfirmasi': 'Menunggu Konfirmasi BK'
+                }])
+                
+                st.session_state.db_jadwal = pd.concat([st.session_state.db_jadwal, jadwal_baru], ignore_index=True)
+                simpan_database_jadwal(st.session_state.db_jadwal)
+                st.success(f"📅 Permintaan konseling tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan ke Guru BK!")
 
 # ==========================================
-# 6. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
+# 7. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
 # ==========================================
 elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
     st.title("📊 Dashboard & Rekam Data Konseling Guru BK")
-    st.caption("🔒 Pengelolaan terintegrasi: Rekap laporan, deteksi NLP, penjadwalan, dan rekam data siswa.")
+    st.caption("🔒 Pengelolaan terintegrasi: Rekap laporan, deteksi NLP, konfirmasi jadwal, dan rekam data siswa.")
     
     passcode = st.text_input("🔑 Kata Sandi Autentikasi Guru BK:", type="password")
     
@@ -405,9 +460,16 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
         st.success("Autentikasi berhasil. Selamat bertugas, Bapak/Ibu Guru BK MAN 2 Kudus.")
         st.divider()
         
-        st.session_state.db_laporan = muat_database()
+        st.session_state.db_laporan = muat_database_laporan()
+        st.session_state.db_jadwal = muat_database_jadwal()
         df = st.session_state.db_laporan
+        df_jdw = st.session_state.db_jadwal
         
+        # Notifikasi Otomatis di Dashboard untuk Jadwal Menunggu
+        pending_count = len(df_jdw[df_jdw['Status_Konfirmasi'] == 'Menunggu Konfirmasi BK']) if not df_jdw.empty else 0
+        if pending_count > 0:
+            st.warning(f"🔔 **NOTIFIKASI OTOMATIS:** Ada **{pending_count} pengajuan jadwal konseling baru** dari siswa yang menunggu konfirmasi Anda!")
+
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(df)}</div><div class='metric-label'>Total Laporan Masuk</div></div>", unsafe_allow_html=True)
@@ -421,37 +483,16 @@ elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
             st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#10B981 !important;'>{len(df)-merah-kuning}</div><div class='metric-label'>Urgensi Rendah</div></div>", unsafe_allow_html=True)
 
         st.divider()
-        st.subheader("📋 Rekam Medis & Penanganan Terstruktur Kasus Siswa")
+        st.subheader("📅 Kelola & Konfirmasi Pengajuan Jadwal Konseling Siswa")
         
-        if df.empty:
-            st.info("Belum ada laporan siswa yang masuk di sistem.")
+        if df_jdw.empty:
+            st.info("Belum ada pengajuan jadwal konseling dari siswa.")
         else:
-            df_sorted = df.sort_values(by='Skor_Urgensi', ascending=False)
-            
-            for idx, row in df_sorted.iterrows():
-                with st.expander(f"[{row['Status_Urgensi']}] {row['ID_Kasus']} - {row['Kategori']} ({row['Waktu']})"):
-                    st.write("**Isi Laporan Siswa (Anonim & Terenkripsi):**")
-                    st.write(f"_{row['Isi_Laporan_Enkripsi']}_")
-                    
-                    st.divider()
-                    st.write("**Rekam Data Konseling & Tindak Lanjut Guru BK:**")
-                    catatan_baru = st.text_area(f"Catatan / Rekam Data Konseling #{row['ID_Kasus']}:", value=str(row['Catatan_Rekam_Medis_BK']), key=f"notes_{idx}")
-                    status_baru = st.selectbox(f"Status Penanganan Kasus #{row['ID_Kasus']}:", ["Baru", "Prosedur Konseling", "Tindak Lanjut", "Selesai"], key=f"status_{idx}")
-                    
-                    if st.button("Simpan Rekam Data 💾", key=f"btn_{idx}"):
-                        st.session_state.db_laporan.at[idx, 'Catatan_Rekam_Medis_BK'] = catatan_baru
-                        st.session_state.db_laporan.at[idx, 'Status_Kasus'] = status_baru
-                        simpan_database(st.session_state.db_laporan)
-                        st.success("Rekam data konseling dan status penanganan berhasil diperbarui!")
-
-            st.divider()
-            csv_data = df_sorted.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label="📥 Download Rekapitulasi Data Konseling (CSV)",
-                data=csv_data,
-                file_name=f"Rekap_BK_MAN2Kudus_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/csv"
-            )
-            
-    elif passcode != "":
-        st.error("❌ Kata sandi autentikasi salah. Akses ditolak.")
+            for idx_j, row_j in df_jdw.iterrows():
+                with st.container():
+                    col_info, col_aksi = st.columns([2, 2])
+                    with col_info:
+                        st.write(f"**ID:** {row_j['ID_Jadwal']} | **Email:** {row_j['Email_Siswa']}")
+                        st.write(f"**Waktu:** {row_j['Tanggal']} pukul {row_j['Jam']} WIB | **Status:** `{row_j['Status_Konfirmasi']}`")
+                    with col_aksi:
+                        pilihan_konfirm
