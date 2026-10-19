@@ -17,14 +17,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Path direktori utama aplikasi
 DIR_UTAMA = os.path.dirname(os.path.abspath(__file__))
 FILE_DATABASE = os.path.join(DIR_UTAMA, "db_laporan.csv")
 FILE_JADWAL = os.path.join(DIR_UTAMA, "db_jadwal.csv")
 
 EMAIL_GURU_BK = "bilzazsna@gmail.com"
 
-# Fungsi Pembaca Gambar Lokal ke Base64
 def muat_gambar_base64(nama_file):
     path_lengkap = os.path.join(DIR_UTAMA, nama_file)
     if os.path.exists(path_lengkap):
@@ -33,17 +31,14 @@ def muat_gambar_base64(nama_file):
         return base64.b64encode(data).decode()
     return None
 
-# Membaca file gambar pendukung
 bg_base64 = muat_gambar_base64("bg_laut.jpg")
 cowo_base64 = muat_gambar_base64("kepiting_cowo.png")
 logo_base64 = muat_gambar_base64("Logo_MAN2.png")
 
-# CSS Kustom: Styling Tampilan
 st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap');
 
-    /* BACKGROUND LAUT UTAMA */
     [data-testid="stAppViewContainer"] {{
         background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("data:image/jpg;base64,{bg_base64 if bg_base64 else ''}") !important;
         background-size: cover !important;
@@ -63,7 +58,6 @@ st.markdown(f"""
         background-color: transparent !important;
     }}
 
-    /* Header Deretan Logo Atas */
     .top-logos-container {{
         text-align: center;
         margin-bottom: 10px;
@@ -75,7 +69,6 @@ st.markdown(f"""
         filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.3));
     }}
 
-    /* Judul Utama */
     .main-title-box {{
         text-align: center;
         margin-bottom: 20px;
@@ -112,7 +105,6 @@ st.markdown(f"""
         border: 2px solid #FFFFFF;
     }}
 
-    /* Maskot Temo Tunggal di Tengah */
     .img-maskot-pure {{
         text-align: center;
         background: transparent !important;
@@ -137,7 +129,6 @@ st.markdown(f"""
         transform: rotate(3deg);
     }}
 
-    /* Kotak Pesan Sambutan */
     .speech-bubble {{
         font-family: 'Poppins', sans-serif;
         background-color: rgba(255, 255, 255, 0.92) !important;
@@ -151,7 +142,6 @@ st.markdown(f"""
         border: 4px solid #E0F2FE;
     }}
 
-    /* RADIO BUTTON SIDEBAR HITAM PEKAT SAAT DIPILIH */
     [data-testid="stSidebar"] {{
         background-color: rgba(3, 105, 161, 0.95) !important;
         color: white;
@@ -174,7 +164,6 @@ st.markdown(f"""
         color: #F0F9FF !important;
     }}
 
-    /* Wadah Form & Tab */
     .stTabs, form, [data-testid="stForm"] {{
         background-color: rgba(255, 255, 255, 0.92) !important;
         backdrop-filter: blur(12px);
@@ -431,58 +420,4 @@ if menu == "✨ Siswa (Curhat & Jadwal)":
                 simpan_database_jadwal(st.session_state.db_jadwal)
                 
                 subjek_bk = f"📅 [Jadwal Baru #{id_jadwal}] Pengajuan Konseling Siswa"
-                pesan_bk = f"Ada pengajuan jadwal konseling baru dari siswa:\n\nEmail Siswa: {email_siswa}\nTanggal: {tgl_pilihan}\nJam: {jam_pilihan.strftime('%H:%M')} WIB\n\nSilakan konfirmasi di Dashboard Guru BK."
-                kirim_email_notifikasi(EMAIL_GURU_BK, subjek_bk, pesan_bk)
-                
-                st.success(f"📅 Permintaan konseling tanggal **{tgl_pilihan}** jam **{jam_pilihan.strftime('%H:%M')} WIB** berhasil diajukan! Notifikasi otomatis telah dikirim ke Guru BK.")
-
-# ==========================================
-# 7. HALAMAN GURU BK (DASHBOARD & REKAM MEDIS)
-# ==========================================
-elif menu == "🔒 Guru BK (Dashboard & Rekam Medis)":
-    st.title("📊 Dashboard & Rekam Data Konseling Guru BK")
-    st.caption("🔒 Pengelolaan terintegrasi: Rekap laporan, deteksi NLP, konfirmasi jadwal, dan rekam data siswa.")
-    
-    passcode = st.text_input("🔑 Kata Sandi Autentikasi Guru BK:", type="password")
-    
-    if passcode == "bk123":
-        st.success("Autentikasi berhasil. Selamat bertugas, Bapak/Ibu Guru BK MAN 2 Kudus.")
-        st.divider()
-        
-        st.session_state.db_laporan = muat_database_laporan()
-        st.session_state.db_jadwal = muat_database_jadwal()
-        df = st.session_state.db_laporan
-        df_jdw = st.session_state.db_jadwal
-        
-        pending_count = len(df_jdw[df_jdw['Status_Konfirmasi'] == 'Menunggu Konfirmasi BK']) if not df_jdw.empty else 0
-        if pending_count > 0:
-            st.warning(f"🔔 **NOTIFIKASI OTOMATIS:** Ada **{pending_count} pengajuan jadwal konseling baru** dari siswa yang menunggu konfirmasi Anda!")
-
-        c1, c2, c3, c4 = st.columns(4)
-        with c1:
-            st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(df)}</div><div class='metric-label'>Total Laporan Masuk</div></div>", unsafe_allow_html=True)
-        with c2:
-            merah = len(df[df['Status_Urgensi'].str.contains("MERAH", na=False)]) if not df.empty else 0
-            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#EF4444 !important;'>{merah}</div><div class='metric-label'>Urgensi Tinggi (NLP)</div></div>", unsafe_allow_html=True)
-        with c3:
-            kuning = len(df[df['Status_Urgensi'].str.contains("KUNING", na=False)]) if not df.empty else 0
-            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#F59E0B !important;'>{kuning}</div><div class='metric-label'>Urgensi Sedang (NLP)</div></div>", unsafe_allow_html=True)
-        with c4:
-            st.markdown(f"<div class='metric-card'><div class='metric-value' style='color:#10B981 !important;'>{len(df)-merah-kuning}</div><div class='metric-label'>Urgensi Rendah</div></div>", unsafe_allow_html=True)
-
-        st.divider()
-        st.subheader("📅 Kelola & Konfirmasi Pengajuan Jadwal Konseling Siswa")
-        
-        if df_jdw.empty:
-            st.info("Belum ada pengajuan jadwal konseling dari siswa.")
-        else:
-            for idx_j, row_j in df_jdw.iterrows():
-                with st.container():
-                    col_info, col_aksi = st.columns([2, 2])
-                    with col_info:
-                        st.write(f"**ID:** {row_j['ID_Jadwal']} | **Email:** {row_j['Email_Siswa']}")
-                        st.write(f"**Waktu:** {row_j['Tanggal']} pukul {row_j['Jam']} WIB | **Status:** `{row_j['Status_Konfirmasi']}`")
-                    with col_aksi:
-                        current_status = str(row_j['Status_Konfirmasi'])
-                        status_options = ["Menunggu Konfirmasi BK", "Diterima", "Ditolak"]
-                        default_idx =
+                pesan_bk = f"Ada pengajuan jadwal konseling baru dari
