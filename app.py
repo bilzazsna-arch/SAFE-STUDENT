@@ -778,4 +778,5 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                 st.write("**Status jadwal:**", r["schedule_status"])
 
                 if r["requested"]:
-                    st.write("**Waktu diajukan:**", r["re
+                    st.write("**Waktu diajukan:**",
+                             r["requested"])
