@@ -1,99 +1,181 @@
 import os
-import sqlite3
-import smtplib
 import ssl
+import smtplib
 import secrets
 import base64
 import html
+from pathlib import Path
 from datetime import datetime, date, time
 from email.message import EmailMessage
-from pathlib import Path
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
 
 # =========================================================
-# 1. KONFIGURASI UTAMA
+# 1. KONFIGURASI
 # =========================================================
-
-BASE = Path(__file__).resolve().parent
-DB = BASE / "safe_student.db"
-
-BK_EMAIL = "bkm2kmendunia@gmail.com"
-SENDER = "safestudentm2k@gmail.com"
 
 st.set_page_config(
     page_title="SAFE-STUDENT | MAN 2 Kudus",
     page_icon="🦀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# Mencari gambar berdasarkan beberapa kemungkinan nama file.
-def cari_file(*nama_file):
-    for nama in nama_file:
-        path = BASE / nama
-        if path.exists():
-            return path
-    return None
+BASE = Path(__file__).resolve().parent
+
+REPORT_FILE = BASE / "db_laporan.csv"
+APPOINTMENT_FILE = BASE / "db_jadwal.csv"
+EMAIL_LOG_FILE = BASE / "db_email.csv"
+
+BK_EMAIL = "bkm2kmendunia@gmail.com"
+SENDER_EMAIL = "safestudentm2k@gmail.com"
+
+LOGO_FILE = "Logo_MAN2.png"
+BG_FILE = "bg_laut.jpg"
+KEMA_FILE = "ubur_cewe.png"
+TEMO_FILE = "kepiting_cowo.png"
 
 
-LOGO = cari_file(
-    "Logo_MAN2.png",
-    "logo_man2.png",
-    "logo_gabungan.png"
-)
+# =========================================================
+# 2. STRUKTUR DATA
+# =========================================================
 
-BACKGROUND = cari_file(
-    "bg_laut.jpg",
-    "bg_laut.png",
-    "background_laut.jpg"
-)
+REPORT_COLUMNS = [
+    "ID_Kasus",
+    "Waktu",
+    "Kategori",
+    "Isi_Laporan",
+    "Status_Urgensi",
+    "Skor_Urgensi",
+    "Status_Kasus",
+    "Catatan_Guru_BK",
+    "Catatan_Rekam_Medis_BK",
+    "Kontak_Opsional",
+    "Notifikasi_Email",
+]
 
-KEMA = cari_file(
-    "ubur_cewe.png",
-    "kepiting_cewe.png",
-    "kema.png"
-)
+APPOINTMENT_COLUMNS = [
+    "ID_Jadwal",
+    "Waktu_Dibuat",
+    "ID_Kasus",
+    "Tanggal",
+    "Jam",
+    "Nama_Panggilan",
+    "Kontak_Opsional",
+    "Email_Siswa",
+    "Catatan",
+    "Status_Jadwal",
+    "Jadwal_Final",
+    "Catatan_Guru_BK",
+    "Notifikasi_Email",
+]
 
-TEMO = cari_file(
-    "kepiting_cowo.png",
-    "kepiting_cowok.png",
-    "temo.png"
-)
+EMAIL_COLUMNS = [
+    "Waktu",
+    "Penerima",
+    "Subjek",
+    "Jenis",
+    "ID_Referensi",
+    "Status",
+    "Detail",
+]
 
 
-def gambar_base64(path):
-    if not path or not path.exists():
+def waktu_sekarang():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def baca_csv(path, columns):
+    """Membaca CSV lama dan menambahkan kolom baru tanpa menghapus kolom lama."""
+    if path.exists():
+        try:
+            df = pd.read_csv(path, dtype=str).fillna("")
+
+            for col in columns:
+                if col not in df.columns:
+                    df[col] = ""
+
+            # Pertahankan kolom lama serta kolom baru.
+            urutan = list(columns) + [
+                col for col in df.columns if col not in columns
+            ]
+            return df[urutan]
+
+        except Exception:
+            st.error(
+                f"File {path.name} tidak dapat dibaca. "
+                "Periksa file sebelum melanjutkan."
+            )
+
+    return pd.DataFrame(columns=columns)
+
+
+def simpan_csv(path, df):
+    df.to_csv(path, index=False, encoding="utf-8-sig")
+
+
+def load_reports():
+    return baca_csv(REPORT_FILE, REPORT_COLUMNS)
+
+
+def load_appointments():
+    return baca_csv(APPOINTMENT_FILE, APPOINTMENT_COLUMNS)
+
+
+def load_email_logs():
+    return baca_csv(EMAIL_LOG_FILE, EMAIL_COLUMNS)
+
+
+def save_reports(df):
+    simpan_csv(REPORT_FILE, df)
+
+
+def save_appointments(df):
+    simpan_csv(APPOINTMENT_FILE, df)
+
+
+def save_email_logs(df):
+    simpan_csv(EMAIL_LOG_FILE, df)
+
+
+# =========================================================
+# 3. GAMBAR LOKAL
+# =========================================================
+
+def image_uri(filename):
+    path = BASE / filename
+
+    if not path.exists():
         return ""
 
-    ekstensi = path.suffix.lower()
-    tipe = {
+    ext = path.suffix.lower()
+    mime = {
         ".png": "image/png",
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
-        ".webp": "image/webp"
-    }.get(ekstensi, "image/png")
+        ".webp": "image/webp",
+    }.get(ext, "image/png")
 
-    data = base64.b64encode(path.read_bytes()).decode("utf-8")
-    return f"data:{tipe};base64,{data}"
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    return f"data:{mime};base64,{encoded}"
 
 
-LOGO_URI = gambar_base64(LOGO)
-BG_URI = gambar_base64(BACKGROUND)
-KEMA_URI = gambar_base64(KEMA)
-TEMO_URI = gambar_base64(TEMO)
+LOGO_URI = image_uri(LOGO_FILE)
+BG_URI = image_uri(BG_FILE)
+KEMA_URI = image_uri(KEMA_FILE)
+TEMO_URI = image_uri(TEMO_FILE)
 
 
 # =========================================================
-# 2. CSS DESAIN WEBSITE
+# 4. CSS — DESAIN UTAMA
 # =========================================================
 
-css_background = (
+background_css = (
     f'url("{BG_URI}")'
     if BG_URI
-    else "linear-gradient(145deg, #06365d, #087da6, #c9f3ff)"
+    else "linear-gradient(135deg,#073b66,#0785aa,#bcefff)"
 )
 
 st.markdown(
@@ -104,45 +186,37 @@ st.markdown(
     );
 
     :root {{
-        --navy: #06365d;
+        --navy: #073b66;
         --blue: #087ca8;
-        --cyan: #26c6da;
+        --cyan: #25c6da;
         --yellow: #ffdc42;
-        --white: #ffffff;
-        --text: #173c55;
+        --ink: #173c55;
     }}
 
     html, body, [class*="css"] {{
         font-family: 'Poppins', sans-serif;
     }}
 
-    .stApp {{
+    [data-testid="stAppViewContainer"] {{
         background-image:
             linear-gradient(
-                180deg,
-                rgba(2, 35, 66, .58),
-                rgba(2, 64, 99, .42),
-                rgba(3, 54, 85, .68)
+                rgba(2,36,65,.48),
+                rgba(2,54,83,.42)
             ),
-            {css_background};
-        background-size: cover;
+            {background_css};
         background-position: center;
+        background-size: cover;
         background-attachment: fixed;
-        color: var(--text);
     }}
 
     [data-testid="stHeader"] {{
         background: transparent;
     }}
 
-    [data-testid="stToolbar"] {{
-        right: 1rem;
-    }}
-
     .block-container {{
         max-width: 1450px;
         padding-top: 1.2rem;
-        padding-bottom: 1rem;
+        padding-bottom: 1.5rem;
     }}
 
     /* SIDEBAR */
@@ -150,635 +224,530 @@ st.markdown(
     [data-testid="stSidebar"] {{
         background: linear-gradient(
             180deg,
-            #052e50 0%,
-            #075985 52%,
-            #087e9c 100%
+            #052e50,
+            #075985,
+            #087f9d
         );
-        border-right: 1px solid rgba(255,255,255,.18);
+        border-right: 1px solid rgba(255,255,255,.2);
     }}
 
     [data-testid="stSidebar"] * {{
-        color: #ffffff;
-    }}
-
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
-        line-height: 1.65;
+        color: white;
     }}
 
     [data-testid="stSidebar"] hr {{
-        border-color: rgba(255,255,255,.23);
-    }}
-
-    [data-testid="stSidebar"] [role="radiogroup"] {{
-        gap: 8px;
+        border-color: rgba(255,255,255,.25);
     }}
 
     [data-testid="stSidebar"] [role="radio"] {{
-        background: rgba(255,255,255,.07);
+        padding: 9px;
         border-radius: 12px;
-        padding: 10px;
     }}
 
-    [data-testid="stSidebar"] [role="radio"]:has(
-        input:checked
-    ) {{
-        background: rgba(255,255,255,.2);
-        border: 1px solid rgba(255,255,255,.45);
+    [data-testid="stSidebar"] [role="radio"]:has(input:checked) {{
+        background: rgba(255,255,255,.18);
     }}
 
-    /* LOGO SEKOLAH */
+    /* LOGO */
 
-    .logo-area {{
+    .logo-container {{
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%;
-        margin: 4px auto 15px auto;
-        padding: 5px 0;
+        margin: 3px auto 18px;
     }}
 
-    .school-logo {{
+    .logo-school {{
         display: block;
-        width: min(420px, 90%);
+        width: min(430px, 92%);
         max-height: 150px;
         object-fit: contain;
-        filter: drop-shadow(0 5px 12px rgba(0,0,0,.25));
+        filter: drop-shadow(0 5px 10px rgba(0,0,0,.25));
     }}
 
-    /* JUDUL UTAMA */
+    /* JUDUL */
 
-    .brand-top {{
+    .eyebrow {{
+        color: #f0fcff;
         text-align: center;
-        color: #e9fbff;
-        font-size: clamp(.72rem, 1.5vw, 1rem);
+        letter-spacing: 3px;
+        font-size: .82rem;
         font-weight: 700;
-        letter-spacing: 4px;
-        text-shadow: 0 2px 8px rgba(0,0,0,.4);
-        margin: 4px 0;
+        text-shadow: 0 2px 6px #002c49;
     }}
 
-    .brand-title {{
+    .title-curhatin {{
         text-align: center;
-        line-height: 1.05;
-        margin: 5px auto 8px auto;
         font-family: 'Fredoka', sans-serif;
-        font-size: clamp(2.8rem, 7vw, 6rem);
+        font-size: clamp(3rem, 7vw, 6.1rem);
         font-weight: 700;
+        line-height: 1.05;
+        margin: 5px 0;
         color: #ffdf43;
         text-shadow:
             0 3px 0 #e99a16,
-            0 6px 0 #064b77,
-            0 10px 18px rgba(0,0,0,.38);
-        overflow-wrap: anywhere;
+            0 6px 0 #075985,
+            0 10px 18px rgba(0,0,0,.35);
     }}
 
-    .brand-subtitle {{
+    .title-digital {{
         text-align: center;
         font-family: 'Fredoka', sans-serif;
-        font-size: clamp(1.35rem, 3.5vw, 2.5rem);
-        font-weight: 600;
-        color: #ffffff;
-        text-shadow:
-            0 3px 0 #075985,
-            0 5px 12px rgba(0,0,0,.35);
-        margin-bottom: 12px;
-    }}
-
-    .brand-caption {{
-        text-align: center;
-        max-width: 700px;
-        margin: 0 auto 20px auto;
-        color: #effcff;
-        font-size: .92rem;
-        line-height: 1.8;
-        text-shadow: 0 2px 5px rgba(0,0,0,.35);
-    }}
-
-    /* BAGIAN KEMA, SAMBUTAN, TEMO */
-
-    .character-name {{
-        text-align: center;
-        font-family: 'Fredoka', sans-serif;
-        font-size: clamp(1.15rem, 2vw, 1.55rem);
+        font-size: clamp(1.8rem, 4vw, 3.2rem);
         font-weight: 700;
-        color: #ffdf43;
-        text-shadow: 0 3px 8px rgba(0,0,0,.45);
-        margin-top: 2px;
+        color: #fff;
+        margin: 0;
+        text-shadow:
+            0 3px 0 #0784bb,
+            0 6px 12px rgba(0,0,0,.4);
     }}
 
-    .character-caption {{
+    .title-safe {{
+        display: table;
+        margin: 12px auto 25px;
+        padding: 8px 18px;
+        border-radius: 30px;
+        background: rgba(4,54,91,.92);
+        border: 1px solid rgba(255,255,255,.85);
+        color: white;
+        font-size: .88rem;
+        font-weight: 600;
         text-align: center;
-        color: #ffffff;
-        font-size: .78rem;
-        font-weight: 500;
-        margin-bottom: 8px;
-        text-shadow: 0 2px 5px rgba(0,0,0,.4);
     }}
+
+    /* MASKOT */
 
     .mascot {{
         width: 100%;
-        max-width: 250px;
-        max-height: 300px;
-        object-fit: contain;
-        display: block;
-        margin: 0 auto;
-        filter: drop-shadow(0 9px 12px rgba(0,0,0,.25));
-    }}
-
-    .greeting-card {{
-        background: rgba(255,255,255,.96);
-        border: 2px solid rgba(255,255,255,.8);
-        border-radius: 26px;
-        padding: 24px 22px;
-        margin: 14px auto;
         text-align: center;
-        box-shadow: 0 15px 35px rgba(0,25,55,.2);
     }}
 
-    .greeting-card h2 {{
+    .mascot img {{
+        display: block;
+        width: 100%;
+        max-width: 245px;
+        max-height: 310px;
+        object-fit: contain;
+        margin: 0 auto;
+        filter: drop-shadow(0 8px 11px rgba(0,0,0,.27));
+    }}
+
+    .mascot-name {{
+        display: inline-block;
+        margin-top: 7px;
+        padding: 5px 24px;
+        background: #fff;
+        color: #075985;
+        border: 2px solid #d8f3ff;
+        border-radius: 20px;
+        font-family: 'Fredoka', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(0,0,0,.16);
+    }}
+
+    /* KARTU SAMBUTAN */
+
+    .welcome-card {{
+        background: rgba(255,255,255,.97);
+        border: 3px solid #d7f0ff;
+        border-radius: 26px;
+        padding: 25px 22px;
+        margin: 12px auto;
+        text-align: center;
+        box-shadow: 0 12px 28px rgba(0,24,50,.2);
+    }}
+
+    .welcome-tag {{
+        display: inline-block;
+        background: #e2f8ff;
+        color: #087ca8;
+        border-radius: 30px;
+        padding: 6px 12px;
+        font-size: .75rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }}
+
+    .welcome-title {{
         color: #075985;
         font-family: 'Fredoka', sans-serif;
-        font-size: clamp(1.25rem, 2.5vw, 1.85rem);
+        font-size: clamp(1.3rem, 2.4vw, 1.9rem);
         line-height: 1.3;
-        margin: 0 0 12px 0;
-    }}
-
-    .greeting-card p {{
-        color: #426277;
-        font-size: .9rem;
-        line-height: 1.8;
-        margin-bottom: 8px;
-    }}
-
-    .welcome-pill {{
-        display: inline-block;
-        background: #e0f7ff;
-        color: #075985;
-        border-radius: 30px;
-        padding: 7px 13px;
-        font-size: .78rem;
         font-weight: 700;
         margin-bottom: 12px;
     }}
 
-    /* KARTU FORMULIR */
+    .welcome-copy {{
+        color: #426277;
+        font-size: .88rem;
+        line-height: 1.9;
+    }}
 
-    .section-banner {{
-        background: linear-gradient(110deg, #ffffff, #e9faff);
-        border: 1px solid #d1eff8;
-        border-left: 6px solid #0c91bb;
+    /* KARTU DAN FORM */
+
+    .section-card {{
+        background: linear-gradient(120deg,#fff,#eafaff);
+        border: 1px solid #ccecf8;
+        border-left: 6px solid #0b91ba;
         border-radius: 17px;
         padding: 18px 20px;
-        margin: 12px 0 18px 0;
-        box-shadow: 0 8px 25px rgba(0,30,65,.12);
+        margin: 10px 0 18px;
+        box-shadow: 0 8px 20px rgba(0,35,70,.1);
     }}
 
-    .section-banner h2,
-    .section-banner h3 {{
+    .section-card h3 {{
+        font-family: 'Fredoka', sans-serif;
+        color: #075985;
+        margin: 0 0 7px;
+    }}
+
+    .section-card p {{
+        color: #587789;
+        font-size: .86rem;
+        line-height: 1.7;
+        margin: 0;
+    }}
+
+    .panel-card {{
+        background: rgba(255,255,255,.97);
+        color: #173c55;
+        border: 1px solid #d7edf7;
+        border-radius: 19px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 8px 24px rgba(0,35,70,.11);
+    }}
+
+    .panel-card h3 {{
         color: #075985;
         font-family: 'Fredoka', sans-serif;
-        margin: 0 0 7px 0;
     }}
 
-    .section-banner p {{
-        color: #587789;
-        margin: 0;
-        font-size: .88rem;
-        line-height: 1.7;
-    }}
-
-    .panel {{
+    .metric-card {{
         background: rgba(255,255,255,.97);
         border: 1px solid #d7edf7;
-        border-radius: 20px;
-        padding: 20px;
-        margin-bottom: 16px;
-        box-shadow: 0 9px 26px rgba(0,35,70,.12);
-    }}
-
-    .metric {{
-        background: rgba(255,255,255,.97);
-        border: 1px solid #d7edf7;
-        border-radius: 18px;
+        border-radius: 17px;
         padding: 17px;
-        min-height: 110px;
-        box-shadow: 0 7px 20px rgba(0,35,70,.09);
+        min-height: 95px;
+        box-shadow: 0 7px 18px rgba(0,35,70,.1);
     }}
 
     .metric-label {{
-        font-size: .85rem;
         color: #587789;
+        font-size: .82rem;
     }}
 
-    .metric-number {{
-        font-size: 2rem;
-        font-weight: 800;
+    .metric-value {{
         color: #075985;
+        font-size: 1.9rem;
+        font-weight: 800;
     }}
-
-    .muted {{
-        color: #587789;
-        font-size: .88rem;
-        line-height: 1.7;
-    }}
-
-    /* FORM STREAMLIT */
 
     div[data-testid="stForm"] {{
         background: rgba(255,255,255,.98);
         border: 1px solid #d7edf7;
-        border-radius: 20px;
-        padding: 22px;
+        border-radius: 19px;
+        padding: 20px;
         box-shadow: 0 8px 24px rgba(0,35,70,.1);
     }}
 
     [data-testid="stTabs"] [role="tablist"] {{
         gap: 8px;
+        background: rgba(255,255,255,.94);
+        border-radius: 15px;
+        padding: 7px;
     }}
 
     [data-testid="stTabs"] button[role="tab"] {{
-        border-radius: 12px 12px 5px 5px;
-        padding: 10px 14px;
-        font-weight: 600;
-    }}
-
-    [data-testid="stTextInput"] input,
-    [data-testid="stTextArea"] textarea,
-    [data-testid="stDateInput"] input,
-    [data-testid="stTimeInput"] input {{
         border-radius: 11px;
+        font-weight: 600;
     }}
 
     div.stButton > button,
     div.stFormSubmitButton > button {{
-        background: linear-gradient(100deg, #0879b9, #08a1b7);
-        color: white;
         border: none;
         border-radius: 12px;
-        min-height: 44px;
+        min-height: 43px;
+        background: linear-gradient(100deg,#0879b9,#08a1b7);
+        color: white;
         font-weight: 700;
-        transition: .2s ease;
     }}
 
     div.stButton > button:hover,
     div.stFormSubmitButton > button:hover {{
-        background: linear-gradient(100deg, #065985, #087c9c);
+        background: linear-gradient(100deg,#075985,#087c9c);
         color: white;
         border: none;
-        transform: translateY(-1px);
     }}
 
     [data-testid="stDataFrame"] {{
         background: white;
         border-radius: 12px;
-        overflow: hidden;
     }}
 
     .footer {{
         text-align: center;
-        color: #f0fcff;
+        color: white;
         font-size: .78rem;
-        padding: 28px 8px 10px 8px;
-        text-shadow: 0 2px 5px rgba(0,0,0,.4);
+        padding: 25px 5px 10px;
+        text-shadow: 0 2px 6px #00304b;
     }}
 
-    /* RESPONSIF HP */
-
-    @media (max-width: 768px) {{
+    @media(max-width: 768px) {{
         .block-container {{
-            padding: 1rem .8rem 1rem .8rem;
+            padding: 1rem .75rem;
         }}
 
-        .school-logo {{
-            width: min(300px, 90%);
-            max-height: 110px;
+        .logo-school {{
+            width: min(300px, 92%);
+            max-height: 105px;
         }}
 
-        .brand-top {{
-            letter-spacing: 2px;
+        .mascot img {{
+            max-width: 170px;
+            max-height: 220px;
         }}
 
-        .greeting-card {{
-            padding: 18px 15px;
-            margin: 8px 0 18px 0;
+        .welcome-card {{
+            padding: 17px 14px;
         }}
 
-        .mascot {{
-            max-width: 185px;
-            max-height: 230px;
-        }}
-
-        .panel,
+        .panel-card,
         div[data-testid="stForm"] {{
-            padding: 15px;
-        }}
-    }}
-
-    @media (prefers-reduced-motion: reduce) {{
-        * {{
-            transition: none !important;
+            padding: 14px;
         }}
     }}
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 
 # =========================================================
-# 3. DATABASE
+# 5. EMAIL DAN SECRETS
 # =========================================================
 
-def connect():
-    con = sqlite3.connect(DB, check_same_thread=False)
-    con.row_factory = sqlite3.Row
-    return con
-
-
-def now():
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-
-def init_db():
-    with connect() as con:
-        con.execute("""
-            CREATE TABLE IF NOT EXISTS reports (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                code TEXT UNIQUE,
-                created TEXT,
-                category TEXT,
-                content TEXT,
-                urgency TEXT,
-                score INTEGER,
-                status TEXT DEFAULT 'Baru',
-                student_email TEXT,
-                requested TEXT,
-                final_schedule TEXT,
-                schedule_status TEXT DEFAULT 'Belum diajukan',
-                bk_note TEXT,
-                updated TEXT
-            )
-        """)
-
-        con.execute("""
-            CREATE TABLE IF NOT EXISTS email_log (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created TEXT,
-                recipient TEXT,
-                subject TEXT,
-                event TEXT,
-                code TEXT,
-                status TEXT,
-                detail TEXT
-            )
-        """)
-
-        con.commit()
-
-
-init_db()
-
-
-# =========================================================
-# 4. KONFIGURASI EMAIL
-# =========================================================
-
-def cfg():
+def get_secret(section, key, default=""):
     try:
-        email_secrets = st.secrets.get("email", {})
-
-        return {
-            "sender": email_secrets.get("sender", SENDER),
-            "password": email_secrets.get("app_password", ""),
-            "recipient": email_secrets.get("recipient", BK_EMAIL),
-            "host": email_secrets.get("smtp_host", "smtp.gmail.com"),
-            "port": int(email_secrets.get("smtp_port", 465))
-        }
-
+        return str(st.secrets.get(section, {}).get(key, default))
     except Exception:
-        return {
-            "sender": os.getenv("SAFE_EMAIL_SENDER", SENDER),
-            "password": os.getenv("SAFE_EMAIL_APP_PASSWORD", ""),
-            "recipient": os.getenv("SAFE_EMAIL_RECIPIENT", BK_EMAIL),
-            "host": "smtp.gmail.com",
-            "port": 465
-        }
+        return default
 
 
-def log_mail(to, subject, event, code, status, detail=""):
-    with connect() as con:
-        con.execute("""
-            INSERT INTO email_log
-            (created, recipient, subject, event, code, status, detail)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (
-            now(), to, subject, event, code, status, detail[:300]
-        ))
-        con.commit()
+def email_config():
+    return {
+        "host": get_secret("email", "smtp_host", "smtp.gmail.com"),
+        "port": int(get_secret("email", "smtp_port", "465")),
+        "sender": get_secret("email", "sender", SENDER_EMAIL),
+        "password": get_secret("email", "app_password", ""),
+        "recipient": get_secret("email", "recipient", BK_EMAIL),
+    }
 
 
-def email(to, subject, body, event, code=""):
-    conf = cfg()
+def log_email(to, subject, kind, reference, status, detail=""):
+    df = load_email_logs()
+
+    row = {
+        "Waktu": waktu_sekarang(),
+        "Penerima": to,
+        "Subjek": subject,
+        "Jenis": kind,
+        "ID_Referensi": reference,
+        "Status": status,
+        "Detail": detail[:250],
+    }
+
+    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+    save_email_logs(df)
+
+
+def send_email(to, subject, body, kind, reference=""):
+    conf = email_config()
 
     if not conf["password"]:
-        log_mail(
-            to, subject, event, code,
+        log_email(
+            to, subject, kind, reference,
             "Belum dikonfigurasi",
-            "App Password belum diatur"
+            "App Password belum diatur."
         )
-        return False, "Email belum dikonfigurasi di Secrets."
+        return False, "App Password email belum diatur di Secrets."
 
     try:
-        msg = EmailMessage()
-        msg["From"] = conf["sender"]
-        msg["To"] = to
-        msg["Subject"] = subject
-        msg.set_content(body)
+        message = EmailMessage()
+        message["From"] = conf["sender"]
+        message["To"] = to
+        message["Subject"] = subject
+        message.set_content(body)
 
         with smtplib.SMTP_SSL(
             conf["host"],
             conf["port"],
             context=ssl.create_default_context(),
-            timeout=20
+            timeout=20,
         ) as server:
             server.login(conf["sender"], conf["password"])
-            server.send_message(msg)
+            server.send_message(message)
 
-        log_mail(to, subject, event, code, "Terkirim")
+        log_email(to, subject, kind, reference, "Terkirim")
         return True, "Email berhasil dikirim."
 
-    except Exception as ex:
-        log_mail(to, subject, event, code, "Gagal", str(ex))
-        return False, "Email gagal dikirim. Periksa pengaturan Gmail."
+    except Exception as exc:
+        log_email(
+            to, subject, kind, reference,
+            "Gagal", type(exc).__name__
+        )
+        return False, "Email gagal dikirim. Periksa konfigurasi email."
 
 
-def mail_bk(code, category, urgency):
-    recipient = cfg()["recipient"]
+def notify_bk_report(report_id, category, urgency, created):
+    conf = email_config()
 
     body = f"""
 Halo Guru BK MAN 2 Kudus,
 
 Ada laporan baru di SAFE-STUDENT.
 
-Kode laporan: {code}
+Kode laporan: {report_id}
+Waktu: {created}
 Kategori: {category}
-Penanda urgensi otomatis: {urgency}
+Indikator urgensi: {urgency}
 
-Isi curhat tidak disertakan dalam email demi menjaga privasi.
+Isi curhat tidak disertakan dalam email untuk menjaga privasi.
 Silakan buka dashboard Guru BK untuk meninjau laporan.
 
 SAFE-STUDENT MAN 2 Kudus
 """
 
-    return email(
-        recipient,
-        f"[SAFE-STUDENT] Laporan baru {code}",
+    return send_email(
+        conf["recipient"],
+        f"[SAFE-STUDENT] Laporan baru {report_id}",
         body,
         "Laporan baru",
-        code
+        report_id,
     )
 
 
-def mail_student(to, code, schedule, note=""):
+def notify_bk_appointment(appointment_id, report_id, requested):
+    conf = email_config()
+
+    body = f"""
+Halo Guru BK MAN 2 Kudus,
+
+Ada pengajuan jadwal konseling baru.
+
+Kode jadwal: {appointment_id}
+Kode laporan terkait: {report_id or 'Tidak dihubungkan'}
+Waktu yang diminta: {requested}
+
+Silakan tinjau dan perbarui pengajuan melalui dashboard Guru BK.
+"""
+
+    return send_email(
+        conf["recipient"],
+        f"[SAFE-STUDENT] Pengajuan jadwal {appointment_id}",
+        body,
+        "Pengajuan jadwal",
+        appointment_id,
+    )
+
+
+def notify_student_approved(to, appointment_id, schedule, note=""):
     body = f"""
 Halo,
 
-Pengajuan jadwal konseling kamu telah disetujui Guru BK MAN 2 Kudus.
+Pengajuan jadwal konselingmu telah disetujui Guru BK MAN 2 Kudus.
 
-Kode pengajuan: {code}
-Jadwal: {schedule}
-Lokasi: Ruang BK MAN 2 Kudus.
+Kode jadwal: {appointment_id}
+Jadwal final: {schedule}
 
-Catatan: jika tidak dapat hadir, hubungi Guru BK untuk mengatur ulang jadwal.
-Email ini tidak memuat isi curhat.
+Silakan datang sesuai waktu yang disepakati. Jika tidak dapat hadir,
+hubungi Guru BK untuk mengatur ulang jadwal.
 
-SAFE-STUDENT MAN 2 Kudus
+Email ini tidak memuat isi laporan curhat.
 """
 
     if note.strip():
-        body += "\nCatatan untuk kamu: " + note.strip()
+        body += "\nCatatan untuk kamu:\n" + note.strip()
 
-    return email(
+    return send_email(
         to,
-        f"[SAFE-STUDENT] Jadwal disetujui - {code}",
+        f"[SAFE-STUDENT] Jadwal disetujui {appointment_id}",
         body,
         "Persetujuan jadwal",
-        code
+        appointment_id,
     )
 
 
 # =========================================================
-# 5. FUNGSI LAPORAN
+# 6. INDIKATOR URGENSI
 # =========================================================
 
-def score_text(text):
-    text = text.lower()
+def analyze_text(text):
+    lower = text.lower()
 
     high = [
-        "diancam", "dipukul", "kekerasan",
-        "takut pulang", "tidak aman"
+        "diancam",
+        "dipukul",
+        "kekerasan",
+        "pelecehan",
+        "pemerasan",
+        "takut pulang",
+        "tidak aman",
     ]
 
     medium = [
-        "bullying", "dibully", "cemas",
-        "panik", "stres", "tertekan",
-        "sedih", "konflik"
+        "dibully",
+        "bullying",
+        "diejek",
+        "dikucilkan",
+        "stres",
+        "takut",
+        "cemas",
+        "dihina",
+        "nilai turun",
+        "sendiri",
+        "bertengkar",
+        "masalah keluarga",
     ]
 
-    score = (
-        3 * sum(word in text for word in high)
-        + sum(word in text for word in medium)
-    )
+    score = 3 * sum(word in lower for word in high)
+    score += sum(word in lower for word in medium)
 
     if score >= 3:
-        return "MERAH", score
+        return "MERAH - Perlu ditinjau segera", score
 
-    if score > 0:
-        return "KUNING", score
+    if score >= 1:
+        return "KUNING - Perlu ditinjau", score
 
-    return "HIJAU", score
-
-
-def get_reports():
-    with connect() as con:
-        return pd.read_sql_query(
-            "SELECT * FROM reports ORDER BY created DESC",
-            con
-        )
-
-
-def update_report(code, **kwargs):
-    allowed = {
-        "status",
-        "final_schedule",
-        "schedule_status",
-        "bk_note"
-    }
-
-    values = {
-        key: value
-        for key, value in kwargs.items()
-        if key in allowed
-    }
-
-    values["updated"] = now()
-
-    with connect() as con:
-        con.execute(
-            "UPDATE reports SET "
-            + ", ".join(key + " = ?" for key in values)
-            + " WHERE code = ?",
-            list(values.values()) + [code]
-        )
-        con.commit()
+    return "HIJAU - Tinjauan rutin", score
 
 
 # =========================================================
-# 6. KOMPONEN TAMPILAN
+# 7. KOMPONEN TAMPILAN
 # =========================================================
 
-def show_hero(title, subtitle):
+def show_hero():
     if LOGO_URI:
         st.markdown(
             f"""
-            <div class="logo-area">
-                <img class="school-logo" src="{LOGO_URI}">
+            <div class="logo-container">
+                <img class="logo-school" src="{LOGO_URI}"
+                     alt="Logo gabungan MAN 2 Kudus">
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     st.markdown(
-        f"""
-        <div class="brand-top">
-            SAFE-STUDENT · MAN 2 KUDUS
-        </div>
-
-        <div class="brand-title">
-            {html.escape(title)}
-        </div>
-
-        <div class="brand-subtitle">
-            Digital MAN
-        </div>
-
-        <div class="brand-caption">
-            {html.escape(subtitle)}
-        </div>
+        """
+        <div class="eyebrow">SAFE-STUDENT · MAN 2 KUDUS</div>
+        <div class="title-curhatin">Curhatin</div>
+        <div class="title-digital">Digital MAN</div>
+        <div class="title-safe">- SAFE-STUDENT MAN 2 Kudus -</div>
         """,
-        unsafe_allow_html=True
-    )
-
-
-def show_section(title, subtitle=""):
-    st.markdown(
-        f"""
-        <div class="section-banner">
-            <h3>{html.escape(title)}</h3>
-            <p>{html.escape(subtitle)}</p>
-        </div>
-        """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -786,67 +755,97 @@ def show_character(uri, name, caption):
     if uri:
         st.markdown(
             f"""
-            <img class="mascot" src="{uri}">
-            <div class="character-name">{html.escape(name)}</div>
-            <div class="character-caption">{html.escape(caption)}</div>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f"""
-            <div class="character-name">{html.escape(name)}</div>
-            <div class="character-caption">
-                Gambar belum ditemukan di folder aplikasi.
+            <div class="mascot">
+                <img src="{uri}" alt="{html.escape(name)}">
+                <div class="mascot-name">{html.escape(name)}</div>
+                <div style="color:white;font-size:.78rem;
+                            margin-top:6px;text-shadow:0 2px 5px #00304b;">
+                    {html.escape(caption)}
+                </div>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
+        )
+    else:
+        st.warning(
+            f"Gambar {name} tidak ditemukan. "
+            "Periksa nama file di bagian konfigurasi."
         )
 
 
-def show_metric(label, value):
+def section_card(title, description):
     st.markdown(
         f"""
-        <div class="metric">
-            <div class="metric-label">{html.escape(label)}</div>
-            <div class="metric-number">{value}</div>
+        <div class="section-card">
+            <h3>{html.escape(title)}</h3>
+            <p>{html.escape(description)}</p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
-def check_password(secret_name, state_name, label):
-    if st.session_state.get(state_name, False):
+def metric_card(label, value):
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">{html.escape(label)}</div>
+            <div class="metric-value">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def check_login(secret_key, state_key, label):
+    if st.session_state.get(state_key, False):
         return True
 
-    with st.expander(
-        f"🔐 Masuk {label}",
-        expanded=True
-    ):
-        password = st.text_input(
-            f"Kata sandi {label}",
-            type="password",
-            key=f"pw_{state_name}"
-        )
+    password = st.text_input(
+        f"Kata sandi {label}",
+        type="password",
+        key=f"password_{state_key}",
+    )
 
-        if st.button(f"Masuk {label}", key=f"login_{state_name}"):
-            try:
-                expected = st.secrets.get("auth", {}).get(
-                    secret_name, ""
-                )
-            except Exception:
-                expected = ""
+    if st.button(f"Masuk {label}", key=f"login_{state_key}"):
+        expected = get_secret("auth", secret_key, "")
 
-            if expected and secrets.compare_digest(password, expected):
-                st.session_state[state_name] = True
-                st.rerun()
-            else:
-                st.error(
-                    "Kata sandi salah atau belum diatur di Secrets."
-                )
+        if expected and secrets.compare_digest(password, expected):
+            st.session_state[state_key] = True
+            st.rerun()
+        else:
+            st.error(
+                "Kata sandi salah atau belum diatur di Secrets."
+            )
 
     return False
 
 
-# ===========================================
+# =========================================================
+# 8. SIDEBAR
+# =========================================================
+
+with st.sidebar:
+    st.markdown(
+        """
+        <div style="text-align:center;padding:10px 0;">
+            <div style="font-size:2.5rem;">🦀</div>
+            <div style="font-family:Fredoka,sans-serif;
+                        font-size:1.35rem;font-weight:700;">
+                SAFE-STUDENT
+            </div>
+            <div style="font-size:.78rem;line-height:1.7;">
+                Layanan Pelaporan & Konseling Digital MAN 2 Kudus
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.divider()
+
+    room = st.radio(
+        "Pilih Ruang Akses",
+        [
+            "✨ Siswa — Curhat & Jadwal",
+            "🔒 Guru
