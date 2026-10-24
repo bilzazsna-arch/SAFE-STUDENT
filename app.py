@@ -23,10 +23,15 @@ if bg_img_path.exists():
     bg_css = f"""
     .stApp {{
         background-image: url("data:image/jpg;base64,{bg_base64}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        background-size: 100% auto;
+        background-position: top center;
+        background-repeat: repeat;
         background-attachment: fixed;
+    }}
+    @media (max-width: 1200px) {{
+        .stApp {{
+            background-size: cover;
+        }}
     }}
     """
 else:
@@ -54,14 +59,6 @@ html, body, [class*="css"] {{
     max-width: 1380px;
     padding-top: 1rem;
     padding-bottom: 2rem;
-}}
-
-/* Posisi logo sekolah tepat di tengah */
-.logo-container {{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
 }}
 
 /* Sidebar Styling */
@@ -305,23 +302,23 @@ def hero(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
     st.markdown(f'<div class="hero"><div style="font-size:0.85rem;letter-spacing:2px;font-weight:700;color:#baefff;margin-bottom:4px;">🌊 DIGITAL MAN · MAN 2 KUDUS</div><h1>{title}</h1><p style="font-weight:600;color:#ffd45c;font-size:1.1rem;margin-top:4px;">{subtitle}</p></div>', unsafe_allow_html=True)
 
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Menempatkan logo di tengah menggunakan 3 kolom
-    col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+    # Logo MAN 2 Kudus persis di tengah dengan lebar 160px
+    col_l1, col_l2, col_l3 = st.columns([1.2, 1, 1.2])
     with col_l2:
-        image_if_exists("Logo_MAN2.png", 140)
+        image_if_exists("Logo_MAN2.png", 160)
     
     hero("Curhatin Digital MAN", "- Safe Space -")
     
-    # Layout Maskot Temo dan Sambutan
+    # Layout Maskot Temo di sebelah kiri dan Panel Sambutan di sebelah kanan
     col_a, col_b = st.columns([1, 2.5])
     with col_a:
-        image_if_exists("kepiting_cowo.png", 160)
+        image_if_exists("kepiting_cowo.png", 170)
         st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.5);margin-top:4px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
     with col_b:
         st.markdown("""
-        <div class="panel" style="padding:22px;">
+        <div class="panel" style="padding:24px;">
             <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">Halo Teman-teman MAN! 💙</h3>
-            <p class="muted" style="margin-bottom:0;">
+            <p class="muted" style="margin-bottom:0; font-size:1.02rem;">
                 Aku Temo, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
             </p>
         </div>
