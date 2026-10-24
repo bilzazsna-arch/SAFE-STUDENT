@@ -276,4 +276,56 @@ elif room=="🧑‍🏫 Guru BK":
     if st.session_state.get("bk_auth"):
         df=reports(); n=len(df)
         cols=st.columns(4)
-        for col
+        for col,label,val in zip(cols,["Total laporan","Laporan baru","Jadwal menunggu","Jadwal disetujui"],
+                                  [n, int((df.status=="Baru").sum()) if n else 0, int((df.schedule_status=="Menunggu persetujuan").sum()) if n else 0, int((df.schedule_status=="Disetujui").sum()) if n else 0]):
+            with col: st.markdown(f'<div class="metric"><div>{label}</div><div class="num">{val}</div></div>',unsafe_allow_html=True)
+        t1,t2,t3=st.tabs(["📥 Laporan masuk","📅 Persetujuan jadwal","✉️ Riwayat email"])
+        with t1:
+            if n:
+                selected_code=st.selectbox("Pilih laporan",df.code.tolist())
+                r=df[df.code==selected_code].iloc[0]
+                st.write("**Isi laporan:**"); st.write(r.content)
+                with st.form("update_report"):
+                    status=st.selectbox("Status",["Baru","Diproses","Selesai"],index=["Baru","Diproses","Selesai"].index(r.status))
+                    bk_note=st.text_area("Catatan internal BK",value=r.bk_note or "")
+                    if st.form_submit_button("Simpan"):
+                        update(selected_code,status=status,bk_note=bk_note)
+                        st.success("Tersimpan!"); st.rerun()
+        with t2:
+            waiting=df[df.schedule_status=="Menunggu persetujuan"] if n else pd.DataFrame()
+            if len(waiting):
+                sel_w=st.selectbox("Pilih pengajuan",waiting.code.tolist(),key="sel_w")
+                rw=df[df.code==sel_w].iloc[0]
+                with st.form("appr"):
+                    dec=st.radio("Keputusan",["Setujui","Tolak"])
+                    if st.form_submit_button("Proses"):
+                        if dec=="Setujui":
+                            update(sel_w,schedule_status="Disetujui")
+                            if rw.student_email: mail_student(rw.student_email, sel_w, rw.requested)
+                        else:
+                            update(sel_w,schedule_status="Ditolak")
+                        st.success("Berhasil diproses!"); st.rerun()
+        with t3:
+            with connect() as db: logs=pd.read_sql_query("SELECT created,recipient,subject,event,code,status FROM email_log ORDER BY id DESC LIMIT 100",db)
+            if len(logs): st.dataframe(logs,use_container_width=True,hide_index=True)
+        if st.button("Keluar"): st.session_state["bk_auth"]=False; st.rerun()
+
+elif room=="👨‍👩‍👧 Orang Tua":
+    hero("Ruang Orang Tua","Informasi umum mengenai layanan konseling.")
+    st.markdown('<div class="panel"><h3>Pendampingan Siswa</h3><p class="muted">Hubungi Guru BK jika siswa membutuhkan dukungan lebih lanjut.</p></div>',unsafe_allow_html=True)
+
+else:
+    hero("Admin SAFE-STUDENT","Konfigurasi dan Status Sistem.")
+    with st.expander("🔐 Masuk Admin",expanded=not st.session_state.get("admin_auth",False)):
+        pw=st.text_input("Kata sandi Admin",type="password",key="admin_pw")
+        if st.button("Masuk Admin"):
+            try: expected=st.secrets.get("auth",{}).get("admin_password","")
+            except Exception: expected=""
+            if expected and secrets.compare_digest(pw,expected): st.session_state["admin_auth"]=True; st.rerun()
+            else: st.error("Kata sandi salah.")
+    if st.session_state.get("admin_auth"):
+        conf=cfg()
+        st.write("Pengirim:",conf["sender"]); st.write("Penerima:",conf["recipient"])
+        if st.button("Keluar Admin"): st.session_state["admin_auth"]=False; st.rerun()
+
+st.markdown('<p style="text-align:center;color:#587789;font-size:.8rem;padding:20px">SAFE-STUDENT · MAN 2 Kudus</p>', unsafe_allow_html=True)
