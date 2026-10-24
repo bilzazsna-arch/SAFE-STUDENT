@@ -64,7 +64,7 @@ html, body, [class*="css"] {{
     padding-bottom: 2rem;
 }}
 
-/* Posisi Logo Benar-benar di Tengah & Diperbesar */
+/* Posisi Logo Benar-benar di Tengah */
 .logo-center-wrapper {{
     display: flex;
     justify-content: center;
@@ -183,11 +183,18 @@ div[data-testid="stForm"] {{
     overflow: hidden;
 }}
 
-[data-testid="stImage"] img {{
-    object-fit: contain;
+[data-testid="stImage"] {{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }}
 
-/* Penyesuaian Khusus HP */
+[data-testid="stImage"] img {{
+    object-fit: contain;
+    margin: 0 auto;
+}}
+
+/* Penyesuaian Khusus HP Agar Gambar & Teks Temo Tepat di Tengah */
 @media (max-width: 768px) {{
     .block-container {{
         padding-left: 0.8rem !important;
@@ -196,6 +203,12 @@ div[data-testid="stForm"] {{
     .panel {{
         padding: 16px !important;
         border-radius: 18px !important;
+    }}
+    [data-testid="stColumn"] {{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }}
 }}
 </style>
@@ -375,10 +388,10 @@ if room == "✨ Siswa (Curhat & Jadwal)":
     
     hero_clean("CURHATIN DIGITAL MAN 2 KUDUS", "- Safe Space -")
     
-    # Layout Maskot & Panel Sambutan (Kolom tengah disesuaikan agar Temo bergeser pas ke kanan / nengah)
-    col_space_left, col_a, col_space_mid, col_b, col_space_right = st.columns([0.5, 1.2, 0.2, 2.2, 0.5])
+    # Layout Maskot & Panel Sambutan
+    col_a, col_b = st.columns([1, 2.2])
     with col_a:
-        image_if_exists("kepiting_cowo.png", 160)
+        image_if_exists("kepiting_cowo.png", 170)
         st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:10px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
     with col_b:
         st.markdown("""
