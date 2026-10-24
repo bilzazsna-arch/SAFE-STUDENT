@@ -24,7 +24,7 @@ if bg_img_path.exists():
     .stApp {{
         background-image: url("data:image/jpg;base64,{bg_base64}");
         background-size: cover;
-        background-position: center top;
+        background-position: center center;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
@@ -46,6 +46,7 @@ else:
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
 {bg_css}
 
@@ -63,6 +64,20 @@ html, body, [class*="css"] {{
     padding-bottom: 2rem;
 }}
 
+/* Posisi Logo Benar-benar di Tengah & Diperbesar */
+.logo-center-wrapper {{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}}
+.logo-center-wrapper img {{
+    max-width: 210px !important;
+    height: auto !important;
+    object-fit: contain;
+}}
+
 /* Sidebar Styling */
 [data-testid="stSidebar"] {{
     background: linear-gradient(180deg, rgba(7,59,102,0.95) 0%, rgba(7,89,133,0.95) 58%, rgba(14,116,144,0.95) 100%);
@@ -73,7 +88,7 @@ html, body, [class*="css"] {{
     color: white !important;
 }}
 
-/* Header Judul Eye-Catching Tanpa Kotak */
+/* Header Judul Eye-Catching Font Cantik */
 .hero-clean {{
     text-align: center;
     padding: 10px 5px;
@@ -81,19 +96,19 @@ html, body, [class*="css"] {{
 }}
 .hero-clean .eyebrow {{
     font-family: 'Bubblegum Sans', cursive;
-    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    font-size: clamp(1rem, 2.8vw, 1.3rem);
     letter-spacing: 2px;
     color: #e0f2fe;
     text-shadow: 0 2px 5px rgba(0,0,0,0.5);
     margin-bottom: 2px;
 }}
 .hero-clean h1 {{
-    font-family: 'Fredoka', sans-serif;
-    font-size: clamp(2.3rem, 6vw, 4.2rem);
-    line-height: 1.15;
-    margin: 4px 0;
+    font-family: 'Pacifico', cursive, sans-serif;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    line-height: 1.2;
+    margin: 6px 0;
     color: #ffd45c;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(7,59,102,0.8);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(7,59,102,0.9);
 }}
 .hero-clean p {{
     font-family: 'Bubblegum Sans', cursive;
@@ -109,7 +124,7 @@ html, body, [class*="css"] {{
     backdrop-filter: blur(10px);
     border: 1.5px solid #bae6fd;
     border-radius: 22px;
-    padding: 20px;
+    padding: 22px;
     margin-bottom: 16px;
     box-shadow: 0 10px 28px rgba(8, 59, 102, 0.18);
 }}
@@ -321,7 +336,7 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Sampaikan cerita, temukan dukungan.")
 
-def hero_clean(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
+def hero_clean(title="CURHATIN DIGITAL MAN 2 KUDUS", subtitle="- Safe Space -"):
     st.markdown(f'''
     <div class="hero-clean">
         <div class="eyebrow">🌊 DIGITAL MAN · MAN 2 KUDUS</div>
@@ -330,7 +345,7 @@ def hero_clean(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
     </div>
     ''', unsafe_allow_html=True)
 
-# Dialog / Pop-up Hug Cute dari Maskot Ikan
+# Dialog / Pop-up Hug Cute dari Temo
 @st.dialog("🫂 Pelukan Hangat dari Temo! 🐟")
 def hug_modal(code):
     st.markdown("""
@@ -348,15 +363,20 @@ def hug_modal(code):
     st.caption("Gunakan kode ini di tab 'Cek Status' untuk melihat perkembangan laporan atau jadwalmu.")
 
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Logo Sekolah Rapi di Tengah
-    col_l1, col_l2, col_l3 = st.columns([1, 1.2, 1])
-    with col_l2:
-        image_if_exists("Logo_MAN2.png", 180)
+    # Logo Sekolah Benar-benar di Tengah & Diperbesar Menggunakan Wrapper CSS
+    logo_path = BASE / "Logo_MAN2.png"
+    if logo_path.exists():
+        logo_b64 = get_base64_of_bin_file(logo_path)
+        st.markdown(f'''
+        <div class="logo-center-wrapper">
+            <img src="data:image/png;base64,{logo_b64}" alt="Logo MAN 2 Kudus">
+        </div>
+        ''', unsafe_allow_html=True)
     
-    hero_clean("Curhatin Digital MAN", "- Safe Space -")
+    hero_clean("CURHATIN DIGITAL MAN 2 KUDUS", "- Safe Space -")
     
-    # Layout Responsif Maskot Ikan & Panel Sambutan
-    col_a, col_b = st.columns([1, 2.3])
+    # Layout Maskot & Panel Sambutan (Maskot digeser agar posisinya pas di tengah)
+    col_empty1, col_a, col_b, col_empty2 = st.columns([0.2, 1, 2.3, 0.2])
     with col_a:
         image_if_exists("kepiting_cowo.png", 160)
         st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:10px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
@@ -413,7 +433,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                     found = db.execute("SELECT code FROM reports WHERE code=?", (code_input.strip(),)).fetchone()
                     if found:
                         requested = f"{d.strftime('%d-%m-%Y')} pukul {tm.strftime('%H:%M')}"
-                        db.execute("UPDATE reports sb SET student_email=?,requested=?,schedule_status='Menunggu persetujuan',bk_note=?,updated=? WHERE code=?",
+                        db.execute("UPDATE reports SET student_email=?,requested=?,schedule_status='Menunggu persetujuan',bk_note=?,updated=? WHERE code=?",
                                    (student_email.strip(), requested, note.strip(), now(), code_input.strip()))
                         db.commit()
                 if found:
