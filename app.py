@@ -19,26 +19,39 @@ st.markdown("""
 html,body,[class*="css"]{font-family:Poppins,sans-serif}
 .stApp{background:linear-gradient(145deg,#e9faff,#f8fdff 54%,#d8f3ff);color:var(--ink)}
 [data-testid="stHeader"]{background:transparent}
-.block-container{max-width:1380px;padding-top:1.25rem;padding-bottom:2rem}
+.block-container{max-width:1380px;padding-top:1rem;padding-bottom:2rem}
 [data-testid="stSidebar"]{background:linear-gradient(180deg,#073b66 0%,#075985 58%,#0e7490 100%)}
 [data-testid="stSidebar"] *{color:white!important}
 [data-testid="stSidebar"] [data-testid="stRadio"] label{padding:7px 9px;border-radius:10px}
-.hero{background:linear-gradient(120deg,#073b66 0%,#087fa8 62%,#0891b2 100%);color:white;border-radius:26px;padding:28px 32px;margin:8px 0 22px;box-shadow:0 14px 32px #064b6c20;border:1px solid #ffffff22;position:relative;overflow:hidden}
+
+.hero{
+    background:linear-gradient(120deg,#073b66 0%,#087fa8 62%,#0891b2 100%);
+    color:white;
+    border-radius:26px;
+    padding:24px 30px;
+    margin:8px 0 20px;
+    box-shadow:0 14px 32px #064b6c20;
+    border:1px solid #ffffff22;
+    position:relative;
+    overflow:hidden;
+}
 .hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-45px;top:-75px;background:#ffffff12}
 .hero .eyebrow{font-size:.82rem;letter-spacing:2px;font-weight:700;color:#bcefff}
-.hero h1{font-family:Fredoka,sans-serif;font-size:clamp(2.2rem,5vw,4rem);line-height:1.05;margin:7px 0;color:var(--gold);text-shadow:0 3px 0 #8a551d35}
+.hero h1{font-family:Fredoka,sans-serif;font-size:clamp(2rem,4.5vw,3.5rem);line-height:1.05;margin:6px 0;color:var(--gold);text-shadow:0 3px 0 #8a551d35}
 .hero p{color:#e7f9ff;margin-bottom:0;max-width:760px}
+
 .panel{background:#ffffffed;border:1px solid #d7edf7;border-radius:20px;padding:20px;margin-bottom:15px;box-shadow:0 8px 24px #083b6610}
 .metric{background:linear-gradient(145deg,#fff,#f3fbff);border:1px solid #d7edf7;border-radius:18px;padding:17px;box-shadow:0 5px 18px #083b660c}
 .metric .num{font-family:Fredoka,sans-serif;font-size:1.9rem;font-weight:700;color:#075985}
 .muted{color:#587789;font-size:.9rem}
+
 div.stButton>button,div.stFormSubmitButton>button{border:0;border-radius:13px;background:linear-gradient(90deg,#0879b9,#0891b2);color:white;font-weight:700;min-height:2.7rem;box-shadow:0 5px 12px #0879b926;transition:transform .15s ease}
 div.stButton>button:hover,div.stFormSubmitButton>button:hover{color:white;border:0;transform:translateY(-1px)}
 div[data-testid="stForm"]{background:#fff;border:1px solid #d7edf7;border-radius:18px;padding:18px}
 [data-testid="stTabs"] button{font-weight:600}
 [data-testid="stDataFrame"]{border-radius:14px;overflow:hidden}
 [data-testid="stImage"] img{object-fit:contain}
-@media(max-width:700px){.block-container{padding:1rem .8rem}.hero{padding:22px 19px;border-radius:20px}.panel{padding:15px}.hero h1{font-size:2.35rem}}
+@media(max-width:700px){.block-container{padding:1rem .8rem}.hero{padding:20px 16px;border-radius:20px}.panel{padding:15px}.hero h1{font-size:2.2rem}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -172,25 +185,38 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Sampaikan cerita, temukan dukungan.")
 
-def hero(title="Curhatin", subtitle="Tempat bercerita, meminta bantuan, dan menjadwalkan konseling dengan lebih nyaman."):
+def hero(title="Curhatin Digital MAN", subtitle="Safe Space - Tempat bercerita, meminta bantuan, dan menjadwalkan konseling dengan lebih nyaman."):
     st.markdown(f'<div class="hero"><div class="eyebrow">🌊 DIGITAL MAN · MAN 2 KUDUS</div><h1>{title}</h1><p>{subtitle}</p></div>',unsafe_allow_html=True)
 
 if room=="✨ Siswa (Curhat & Jadwal)":
+    # Logo MAN 2 Kudus ukuran diperkecil (220px)
     if (BASE / "Logo_MAN2.png").exists():
-        st.image(str(BASE / "Logo_MAN2.png"), width=300)
-    hero("Curhatin Digital")
+        st.image(str(BASE / "Logo_MAN2.png"), width=220)
     
-    # Hanya menampilkan Temo saja di tengah/samping
-    col1, col2 = st.columns([1, 2])
-    with col1:
-        image_if_exists("kepiting_cowo.png", 180)
-        st.markdown("<div style='font-weight:700;color:#075985'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="panel"><h3>Halo, Teman-teman MAN 2 Kudus! 💙</h3><p class="muted">Kamu boleh bercerita dengan nyaman bersama Temo. Guru BK akan meninjau laporanmu.</p></div>',unsafe_allow_html=True)
+    hero("Curhatin Digital MAN - Safe Space -")
+    
+    # Layout 3 Kolom untuk Maskot Kema & Temo
+    col_a, col_b, col_c = st.columns([1, 1.5, 1])
+    with col_a:
+        image_if_exists("kepiting_cewe.png", 150)
+        st.markdown("<div style='text-align:center;font-weight:700;color:#075985;margin-top:5px;'>Kema · Sahabat bercerita</div>", unsafe_allow_html=True)
+    with col_b:
+        st.markdown("""
+        <div class="panel" style="text-align:center;padding:18px;">
+            <h3 style="margin-bottom:8px;">Halo Teman-teman MAN! 💙</h3>
+            <p class="muted" style="margin-bottom:0;">
+                Kami Kema & Temo adalah penjaga kerahasian curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        image_if_exists("ubur_cewe.png", 100)
+    with col_c:
+        image_if_exists("kepiting_cowo.png", 150)
+        st.markdown("<div style='text-align:center;font-weight:700;color:#075985;margin-top:5px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
 
     t1,t2,t3=st.tabs(["💬 Tulis Curhat","📅 Ajukan Jadwal","🔎 Cek Status"])
     with t1:
-        st.markdown('<div class="panel"><h3>Formulir Pelaporan Anonim & Rahasia</h3></div>',unsafe_allow_html=True)
+        st.markdown('<div class="panel"><h3>🛡️ Formulir Curhat Anonim (Bebas & Aman)</h3></div>',unsafe_allow_html=True)
         with st.form("report_form",clear_on_submit=True):
             category=st.selectbox("Kategori",["Perundungan / bullying","Stres belajar & tahfidz","Keluarga atau masalah pribadi","Konsultasi agama / moral","Lainnya"])
             content=st.text_area("Ceritakan yang ingin disampaikan",height=160)
