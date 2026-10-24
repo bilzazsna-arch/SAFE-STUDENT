@@ -738,11 +738,3 @@ app_password = "safestudentm2k!!"
 [auth]
 bk_password = "bk123"
 admin_password = "admin123"
-```
-
-### 📌 Ringkasan Perubahan UI:
-1. **Tema Bawah Laut (*Ocean Theme*)**: Background gradasi biru khas lautan lengkap dengan typography ramah ala *Fredoka* & *Poppins*.
-2. **Hero Banner & Badge Kemenag**: Menyertakan jajaran badge institusi di bagian atas serta banner judul besar *Curhatin Digital MAN - Safe Space -*.
-3. **Mascot Box**: Kartu ucapan "Halo Teman-teman MAN!" yang diapit oleh karakter Kema & Temo.
-4. **Sidebar Styling**: Sidebar diubah menggunakan skema warna cream terang dengan icon pesan dan informasi privasi seperti pada gambar.
-5. **Fitur Tetap Utuh**: Seluruh alur kirim curhat, pengajuan jadwal konseling, otentikasi login Guru BK/Admin, serta fitur kirim email SMTP bawaan tetap berjalan 100% normal.
