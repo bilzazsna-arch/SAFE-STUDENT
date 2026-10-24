@@ -1,4 +1,4 @@
-import os, sqlite3, smtplib, ssl, secrets
+import os, sqlite3, smtplib, ssl, secrets, base64
 from datetime import datetime, date, time
 from email.message import EmailMessage
 from pathlib import Path
@@ -12,113 +12,121 @@ SENDER = "safestudentm2k@gmail.com"
 
 st.set_page_config(page_title="SAFE-STUDENT | MAN 2 Kudus", page_icon="🦀", layout="wide")
 
-st.markdown("""
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+bg_img_path = BASE / "bg_laut.jpg"
+if bg_img_path.exists():
+    bg_base64 = get_base64_of_bin_file(bg_img_path)
+    bg_css = f"""
+    .stApp {{
+        background-image: url("data:image/jpg;base64,{bg_base64}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }}
+    """
+else:
+    bg_css = """
+    .stApp {
+        background: linear-gradient(180deg, #0284c7 0%, #38bdf8 65%, #e0f2fe 100%);
+    }
+    """
+
+st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 
-:root{
-    --navy:#073b66;
-    --blue:#087fa8;
-    --cyan:#16b8c8;
-    --gold:#ffd45c;
-    --ink:#12344a;
-}
+{bg_css}
 
-html, body, [class*="css"] {
+html, body, [class*="css"] {{
     font-family: 'Poppins', sans-serif;
-}
+}}
 
-/* Background Nuansa Bawah Laut Cerah & Segar */
-.stApp {
-    background: linear-gradient(180deg, #0284c7 0%, #0284c7 25%, #38bdf8 65%, #e0f2fe 100%);
-    color: var(--ink);
-}
-
-[data-testid="stHeader"] {
+[data-testid="stHeader"] {{
     background: transparent;
-}
+}}
 
-.block-container {
-    max-width: 1400px;
+.block-container {{
+    max-width: 1380px;
     padding-top: 1rem;
     padding-bottom: 2rem;
-}
+}}
+
+/* Posisi logo sekolah tepat di tengah */
+.logo-container {{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}}
 
 /* Sidebar Styling */
-[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #073b66 0%, #075985 58%, #0e7490 100%);
-    border-right: 1px solid rgba(255,255,255,0.1);
-}
-[data-testid="stSidebar"] * {
+[data-testid="stSidebar"] {{
+    background: linear-gradient(180deg, rgba(7,59,102,0.92) 0%, rgba(7,89,133,0.92) 58%, rgba(14,116,144,0.92) 100%);
+    backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(255,255,255,0.15);
+}}
+[data-testid="stSidebar"] * {{
     color: white !important;
-}
-[data-testid="stSidebar"] [data-testid="stRadio"] label {
-    padding: 8px 12px;
-    border-radius: 12px;
-    transition: background 0.2s;
-}
-[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
+}}
 
 /* Hero Banner Utama */
-.hero {
-    background: linear-gradient(120deg, #073b66 0%, #087fa8 60%, #0891b2 100%);
+.hero {{
+    background: linear-gradient(120deg, rgba(7,59,102,0.85) 0%, rgba(8,127,168,0.85) 60%, rgba(8,145,178,0.85) 100%);
+    backdrop-filter: blur(6px);
     color: white;
-    border-radius: 28px;
-    padding: 26px 36px;
-    margin: 8px 0 22px 0;
+    border-radius: 26px;
+    padding: 24px 32px;
+    margin: 8px 0 20px 0;
     box-shadow: 0 16px 36px rgba(6, 75, 108, 0.25);
-    border: 2px solid rgba(255, 255, 255, 0.25);
-    position: relative;
-    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     text-align: center;
-}
-.hero h1 {
+}}
+.hero h1 {{
     font-family: 'Fredoka', sans-serif;
     font-size: clamp(2.2rem, 4.5vw, 3.8rem);
     line-height: 1.1;
     margin: 6px 0;
     color: #ffd45c;
-    text-shadow: 0 3px 6px rgba(0,0,0,0.2);
-}
-.hero p {
-    color: #e7f9ff;
-    font-size: 1.05rem;
-    margin-bottom: 0;
-}
+    text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}}
 
 /* Panel & Card Styling */
-.panel {
-    background: #ffffff;
+.panel {{
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
     border: 1px solid #bae6fd;
     border-radius: 22px;
     padding: 22px;
     margin-bottom: 16px;
-    box-shadow: 0 10px 30px rgba(8, 59, 102, 0.12);
-}
+    box-shadow: 0 10px 30px rgba(8, 59, 102, 0.15);
+}}
 
-.metric {
-    background: linear-gradient(145deg, #ffffff, #f0f9ff);
+.metric {{
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid #bae6fd;
     border-radius: 18px;
     padding: 18px;
-    box-shadow: 0 6px 20px rgba(8, 59, 102, 0.08);
-}
-.metric .num {
+    box-shadow: 0 6px 20px rgba(8, 59, 102, 0.1);
+}}
+.metric .num {{
     font-family: 'Fredoka', sans-serif;
     font-size: 2rem;
     font-weight: 700;
     color: #0284c7;
-}
+}}
 
-.muted {
-    color: #475569;
+.muted {{
+    color: #334155;
     font-size: 0.95rem;
-}
+}}
 
 /* Buttons & Forms */
-div.stButton > button, div.stFormSubmitButton > button {
+div.stButton > button, div.stFormSubmitButton > button {{
     border: 0;
     border-radius: 14px;
     background: linear-gradient(90deg, #0284c7, #0891b2);
@@ -126,42 +134,35 @@ div.stButton > button, div.stFormSubmitButton > button {
     font-weight: 700;
     min-height: 2.8rem;
     box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease;
     width: 100%;
-}
-div.stButton > button:hover, div.stFormSubmitButton > button:hover {
+}}
+div.stButton > button:hover, div.stFormSubmitButton > button:hover {{
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
-}
+}}
 
-div[data-testid="stForm"] {
-    background: #ffffff;
+div[data-testid="stForm"] {{
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid #bae6fd;
     border-radius: 20px;
     padding: 22px;
-    box-shadow: 0 8px 24px rgba(8, 59, 102, 0.08);
-}
+    box-shadow: 0 8px 24px rgba(8, 59, 102, 0.12);
+}}
 
-[data-testid="stTabs"] button {
+[data-testid="stTabs"] button {{
     font-weight: 700;
     font-size: 1rem;
-}
+}}
 
-[data-testid="stDataFrame"] {
+[data-testid="stDataFrame"] {{
     border-radius: 16px;
     overflow: hidden;
-}
+}}
 
-[data-testid="stImage"] img {
+[data-testid="stImage"] img {{
     object-fit: contain;
-}
-
-@media(max-width: 700px) {
-    .block-container { padding: 1rem 0.6rem; }
-    .hero { padding: 20px 16px; border-radius: 20px; }
-    .hero h1 { font-size: 2.2rem; }
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -304,30 +305,27 @@ def hero(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
     st.markdown(f'<div class="hero"><div style="font-size:0.85rem;letter-spacing:2px;font-weight:700;color:#baefff;margin-bottom:4px;">🌊 DIGITAL MAN · MAN 2 KUDUS</div><h1>{title}</h1><p style="font-weight:600;color:#ffd45c;font-size:1.1rem;margin-top:4px;">{subtitle}</p></div>', unsafe_allow_html=True)
 
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Logo MAN 2 Kudus ukuran kecil di atas
-    if (BASE / "Logo_MAN2.png").exists():
-        st.image(str(BASE / "Logo_MAN2.png"), width=200)
+    # Menempatkan logo di tengah menggunakan 3 kolom
+    col_l1, col_l2, col_l3 = st.columns([1, 1, 1])
+    with col_l2:
+        image_if_exists("Logo_MAN2.png", 140)
     
     hero("Curhatin Digital MAN", "- Safe Space -")
     
-    # Layout 3 Kolom Sesuai Referensi (Kiri Kema, Tengah Sambutan & Ubur-ubur, Kanan Temo)
-    col_a, col_b, col_c = st.columns([1, 1.6, 1])
+    # Layout Maskot Temo dan Sambutan
+    col_a, col_b = st.columns([1, 2.5])
     with col_a:
-        image_if_exists("kepiting_cewe.png", 140)
-        st.markdown("<div style='text-align:center;font-weight:700;color:#073b66;margin-top:4px;'>Kema · Sahabat bercerita</div>", unsafe_allow_html=True)
+        image_if_exists("kepiting_cowo.png", 160)
+        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.5);margin-top:4px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
     with col_b:
         st.markdown("""
-        <div class="panel" style="text-align:center;padding:18px;margin-bottom:5px;">
+        <div class="panel" style="padding:22px;">
             <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">Halo Teman-teman MAN! 💙</h3>
-            <p class="muted" style="margin-bottom:0;font-size:0.92rem;">
-                Kami Kema & Temo adalah penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
+            <p class="muted" style="margin-bottom:0;">
+                Aku Temo, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
             </p>
         </div>
         """, unsafe_allow_html=True)
-        image_if_exists("ubur_cewe.png", 90)
-    with col_c:
-        image_if_exists("kepiting_cowo.png", 140)
-        st.markdown("<div style='text-align:center;font-weight:700;color:#073b66;margin-top:4px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
 
     t1, t2, t3 = st.tabs(["💬 Tulis Curhat", "📅 Ajukan Jadwal", "🔎 Cek Status"])
     with t1:
@@ -477,4 +475,4 @@ else:
             st.session_state["admin_auth"] = False
             st.rerun()
 
-st.markdown('<p style="text-align:center;color:#073b66;font-weight:600;font-size:.85rem;padding:20px">SAFE-STUDENT · MAN 2 Kudus · Sampaikan cerita, temukan dukungan.</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align:center;color:#ffffff;text-shadow: 0 1px 3px rgba(0,0,0,0.6);font-weight:600;font-size:.85rem;padding:20px">SAFE-STUDENT · MAN 2 Kudus · Sampaikan cerita, temukan dukungan.</p>', unsafe_allow_html=True)
