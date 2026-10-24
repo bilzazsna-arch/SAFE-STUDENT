@@ -363,7 +363,7 @@ def hug_modal(code):
     st.caption("Gunakan kode ini di tab 'Cek Status' untuk melihat perkembangan laporan atau jadwalmu.")
 
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Logo Sekolah Benar-benar di Tengah & Diperbesar Menggunakan Wrapper CSS
+    # Logo Sekolah Benar-benar di Tengah
     logo_path = BASE / "Logo_MAN2.png"
     if logo_path.exists():
         logo_b64 = get_base64_of_bin_file(logo_path)
@@ -375,8 +375,8 @@ if room == "✨ Siswa (Curhat & Jadwal)":
     
     hero_clean("CURHATIN DIGITAL MAN 2 KUDUS", "- Safe Space -")
     
-    # Layout Maskot & Panel Sambutan (Maskot digeser agar posisinya pas di tengah)
-    col_empty1, col_a, col_b, col_empty2 = st.columns([0.2, 1, 2.3, 0.2])
+    # Layout Maskot & Panel Sambutan (Kolom tengah disesuaikan agar Temo bergeser pas ke kanan / nengah)
+    col_space_left, col_a, col_space_mid, col_b, col_space_right = st.columns([0.5, 1.2, 0.2, 2.2, 0.5])
     with col_a:
         image_if_exists("kepiting_cowo.png", 160)
         st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:10px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
