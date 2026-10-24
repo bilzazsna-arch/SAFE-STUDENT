@@ -194,7 +194,7 @@ div[data-testid="stForm"] {{
     margin: 0 auto;
 }}
 
-/* Penyesuaian Khusus HP Agar Gambar & Teks Temo Tepat di Tengah */
+/* Penyesuaian Khusus HP Agar Tata Letak Rapi di Tengah */
 @media (max-width: 768px) {{
     .block-container {{
         padding-left: 0.8rem !important;
@@ -303,6 +303,21 @@ Silakan masuk ke dashboard Guru BK untuk meninjau laporan.
 SAFE-STUDENT MAN 2 Kudus"""
     return email(to, f"[SAFE-STUDENT] Laporan baru {code}", body, "Laporan baru", code)
 
+def mail_student_code(to, code, category):
+    body = f"""Halo Rencang-rencang MAN 2 Kudus,
+
+Terima kasih sudah menggunakan layanan SAFE-STUDENT. Curhatanmu telah diterima dengan aman dan anonim oleh Temo dan Guru BK.
+
+Berikut adalah Kode Laporan kamu:
+🔑 {code}
+Kategori: {category}
+
+Simpan kode ini untuk mengecek status laporan atau mengajukan jadwal konseling di aplikasi SAFE-STUDENT.
+
+Salam hangat,
+Temo & Tim BK MAN 2 Kudus"""
+    return email(to, f"[SAFE-STUDENT] Kode Laporan Kamu - {code}", body, "Kirim kode laporan ke siswa", code)
+
 def mail_student(to, code, schedule, note=""):
     body = f"""Halo,
 
@@ -349,7 +364,7 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Sampaikan cerita, temukan dukungan.")
 
-def hero_clean(title="CURHATIN DIGITAL MAN 2 KUDUS", subtitle="- Safe Space -"):
+def hero_clean(title="SAFE STUDENT MAN 2 KUDUS", subtitle="- Safe Space -"):
     st.markdown(f'''
     <div class="hero-clean">
         <div class="eyebrow">🌊 DIGITAL MAN · MAN 2 KUDUS</div>
@@ -360,8 +375,8 @@ def hero_clean(title="CURHATIN DIGITAL MAN 2 KUDUS", subtitle="- Safe Space -"):
 
 # Dialog / Pop-up Hug Cute dari Temo
 @st.dialog("🫂 Pelukan Hangat dari Temo! 🐟")
-def hug_modal(code):
-    st.markdown("""
+def hug_modal(code, student_email):
+    st.markdown(f"""
     <div style="text-align: center; padding: 10px;">
         <h2 style="color: #0284c7; font-family: 'Bubblegum Sans', cursive; font-size: 2rem; margin-bottom: 8px;">
             Temo Mengirimkan Pelukan! 🫂💙
@@ -372,7 +387,11 @@ def hug_modal(code):
     </div>
     """, unsafe_allow_html=True)
     image_if_exists("kepiting_cowo.png", 180)
-    st.info(f"🔑 **Simpan Kode Laporanmu:** `{code}`")
+    st.info(f"🔑 **Kode Laporan Kamu:** `{code}`")
+    if student_email.strip():
+        st.success(f"📧 Kode laporan juga telah dikirim secara otomatis ke email: **{student_email.strip()}**")
+    else:
+        st.warning("⚠️ Kamu tidak memasukkan email, pastikan mencatat kode laporan di atas!")
     st.caption("Gunakan kode ini di tab 'Cek Status' untuk melihat perkembangan laporan atau jadwalmu.")
 
 if room == "✨ Siswa (Curhat & Jadwal)":
@@ -386,17 +405,16 @@ if room == "✨ Siswa (Curhat & Jadwal)":
         </div>
         ''', unsafe_allow_html=True)
     
-    hero_clean("CURHATIN DIGITAL MAN 2 KUDUS", "- Safe Space -")
+    hero_clean("SAFE STUDENT MAN 2 KUDUS", "- Safe Space -")
     
-    # Layout Maskot & Panel Sambutan
-    col_a, col_b = st.columns([1, 2.2])
-    with col_a:
+    # Tata Letak Atas-Bawah (Temo di atas, Panel Sambutan di bawahnya agar persis di tengah)
+    col_center = st.columns([1, 4, 1])
+    with col_center[1]:
         image_if_exists("kepiting_cowo.png", 170)
-        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:10px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
-    with col_b:
+        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:12px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
         st.markdown("""
-        <div class="panel" style="padding:22px;">
-            <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">Halo Teman-teman MAN! 💙</h3>
+        <div class="panel" style="padding:22px; text-align:center;">
+            <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">SUGENG RAWUH RENCANG-RENCANG MAN 💙</h3>
             <p class="muted" style="margin-bottom:0; font-size:1rem;">
                 Aku Temo, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
             </p>
@@ -410,7 +428,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
             category = st.selectbox("Kategori", ["Perundungan / bullying", "Stres belajar & tahfidz", "Keluarga atau masalah pribadi", "Konsultasi agama / moral", "Lainnya"])
             content = st.text_area("Ceritakan yang ingin disampaikan", height=150, placeholder="Tulis curhatanmu di sini...")
             optional_email = st.text_input("Email aktif untuk konfirmasi jadwal (opsional)", placeholder="contoh@email.com")
-            use_email = st.checkbox("Saya ingin menggunakan email ini untuk konfirmasi jadwal.")
+            use_email = st.checkbox("Saya ingin menggunakan email ini untuk konfirmasi jadwal & menerima kode laporan.")
             send = st.form_submit_button("Kirim Laporan", use_container_width=True)
         if send:
             if len(content.strip()) < 8: 
@@ -418,16 +436,24 @@ if room == "✨ Siswa (Curhat & Jadwal)":
             else:
                 urgency, sc = score_text(content)
                 code = "MAN2-" + datetime.now().strftime("%y%m%d") + "-" + secrets.token_hex(3).upper()
+                student_mail_target = optional_email.strip() if use_email else ""
+                
                 with connect() as db:
                     db.execute("INSERT INTO reports(code,created,category,content,urgency,score,status,student_email,schedule_status,updated) VALUES(?,?,?,?,?,?,?,?,?,?)",
-                               (code, now(), category, content.strip(), urgency, sc, "Baru", optional_email.strip() if use_email else "", "Belum diajukan", now()))
+                               (code, now(), category, content.strip(), urgency, sc, "Baru", student_mail_target, "Belum diajukan", now()))
                     db.commit()
+                
+                # Kirim notifikasi ke Guru BK
                 mail_bk(code, category, urgency)
+                
+                # Kirim kode laporan otomatis ke email siswa jika dicentang/diisi
+                if student_mail_target:
+                    mail_student_code(student_mail_target, code, category)
                 
                 # Efek Peluk / Cute Pop-up saat selesai kirim
                 st.balloons()
                 st.toast("Pesan terkirim! Temo memberikan pelukan hangat 🫂", icon="🐟")
-                hug_modal(code)
+                hug_modal(code, student_mail_target)
 
     with t2:
         st.markdown('<div class="panel"><h3>📅 Pengajuan Jadwal Tatap Muka</h3></div>', unsafe_allow_html=True)
