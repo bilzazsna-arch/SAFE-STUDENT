@@ -10,7 +10,7 @@ DB = BASE / "safe_student.db"
 BK_EMAIL = "bkm2kmendunia@gmail.com"
 SENDER = "safestudentm2k@gmail.com"
 
-st.set_page_config(page_title="SAFE-STUDENT | MAN 2 Kudus", page_icon="🦀", layout="wide")
+st.set_page_config(page_title="SAFE-STUDENT | MAN 2 Kudus", page_icon="🐟", layout="wide")
 
 def get_base64_of_bin_file(bin_file):
     with open(bin_file, 'rb') as f:
@@ -24,9 +24,16 @@ if bg_img_path.exists():
     .stApp {{
         background-image: url("data:image/jpg;base64,{bg_base64}");
         background-size: cover;
-        background-position: center;
+        background-position: center top;
         background-repeat: no-repeat;
         background-attachment: fixed;
+    }}
+    @media (max-width: 768px) {{
+        .stApp {{
+            background-size: cover !important;
+            background-position: center top !important;
+            background-attachment: scroll !important;
+        }}
     }}
     """
 else:
@@ -38,7 +45,7 @@ else:
 
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 {bg_css}
 
@@ -56,55 +63,55 @@ html, body, [class*="css"] {{
     padding-bottom: 2rem;
 }}
 
-/* Sidebar Styling yang rapi untuk HP dan Laptop */
+/* Sidebar Styling */
 [data-testid="stSidebar"] {{
     background: linear-gradient(180deg, rgba(7,59,102,0.95) 0%, rgba(7,89,133,0.95) 58%, rgba(14,116,144,0.95) 100%);
-    backdrop-filter: blur(8px);
-    border-right: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255,255,255,0.2);
 }}
 [data-testid="stSidebar"] * {{
     color: white !important;
 }}
 
-/* Judul Tanpa Kotak (Clean & Stylish) */
+/* Header Judul Eye-Catching Tanpa Kotak */
 .hero-clean {{
     text-align: center;
-    padding: 15px 10px;
-    margin-bottom: 15px;
+    padding: 10px 5px;
+    margin-bottom: 12px;
 }}
 .hero-clean .eyebrow {{
-    font-size: 0.85rem;
-    letter-spacing: 2.5px;
-    font-weight: 700;
+    font-family: 'Bubblegum Sans', cursive;
+    font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+    letter-spacing: 2px;
     color: #e0f2fe;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-    margin-bottom: 5px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    margin-bottom: 2px;
 }}
 .hero-clean h1 {{
     font-family: 'Fredoka', sans-serif;
-    font-size: clamp(2.2rem, 5vw, 4.2rem);
-    line-height: 1.1;
-    margin: 5px 0;
+    font-size: clamp(2.3rem, 6vw, 4.2rem);
+    line-height: 1.15;
+    margin: 4px 0;
     color: #ffd45c;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(7,59,102,0.8);
 }}
 .hero-clean p {{
+    font-family: 'Bubblegum Sans', cursive;
     color: #ffffff;
-    font-weight: 600;
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
     margin-bottom: 0;
 }}
 
 /* Panel & Card Styling */
 .panel {{
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    border: 1px solid #bae6fd;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    border: 1.5px solid #bae6fd;
     border-radius: 22px;
-    padding: 22px;
+    padding: 20px;
     margin-bottom: 16px;
-    box-shadow: 0 10px 30px rgba(8, 59, 102, 0.15);
+    box-shadow: 0 10px 28px rgba(8, 59, 102, 0.18);
 }}
 
 .metric {{
@@ -126,7 +133,7 @@ html, body, [class*="css"] {{
     font-size: 0.95rem;
 }}
 
-/* Buttons & Forms Responsif */
+/* Button & Form */
 div.stButton > button, div.stFormSubmitButton > button {{
     border: 0;
     border-radius: 14px;
@@ -134,7 +141,7 @@ div.stButton > button, div.stFormSubmitButton > button {{
     color: white;
     font-weight: 700;
     min-height: 2.8rem;
-    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
     transition: transform 0.15s ease;
     width: 100%;
 }}
@@ -145,10 +152,10 @@ div.stButton > button:hover, div.stFormSubmitButton > button:hover {{
 
 div[data-testid="stForm"] {{
     background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #bae6fd;
+    border: 1.5px solid #bae6fd;
     border-radius: 20px;
-    padding: 22px;
-    box-shadow: 0 8px 24px rgba(8, 59, 102, 0.12);
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(8, 59, 102, 0.15);
 }}
 
 [data-testid="stTabs"] button {{
@@ -163,6 +170,18 @@ div[data-testid="stForm"] {{
 
 [data-testid="stImage"] img {{
     object-fit: contain;
+}}
+
+/* Penyesuaian Khusus HP */
+@media (max-width: 768px) {{
+    .block-container {{
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
+    }}
+    .panel {{
+        padding: 16px !important;
+        border-radius: 18px !important;
+    }}
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -296,7 +315,7 @@ def image_if_exists(name, width=None):
         st.image(str(p), width=width, use_container_width=(width is None))
 
 with st.sidebar:
-    st.markdown("## 🦀 SAFE-STUDENT")
+    st.markdown("## 🐟 SAFE-STUDENT")
     st.caption("Layanan Pelaporan & Konseling Digital MAN 2 Kudus")
     room = st.radio("Pilih Ruang Akses", ["✨ Siswa (Curhat & Jadwal)", "🧑‍🏫 Guru BK", "👨‍👩‍👧 Orang Tua", "🔐 Admin"])
     st.markdown("---")
@@ -311,24 +330,41 @@ def hero_clean(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
     </div>
     ''', unsafe_allow_html=True)
 
+# Dialog / Pop-up Hug Cute dari Maskot Ikan
+@st.dialog("🫂 Pelukan Hangat dari Temo! 🐟")
+def hug_modal(code):
+    st.markdown("""
+    <div style="text-align: center; padding: 10px;">
+        <h2 style="color: #0284c7; font-family: 'Bubblegum Sans', cursive; font-size: 2rem; margin-bottom: 8px;">
+            Temo Mengirimkan Pelukan! 🫂💙
+        </h2>
+        <p style="color: #334155; font-size: 1.05rem;">
+            Terima kasih sudah berani bercerita. Kamu luar biasa! Temo dan Guru BK akan menjaga kerahasiaan ceritamu.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    image_if_exists("kepiting_cowo.png", 180)
+    st.info(f"🔑 **Simpan Kode Laporanmu:** `{code}`")
+    st.caption("Gunakan kode ini di tab 'Cek Status' untuk melihat perkembangan laporan atau jadwalmu.")
+
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Logo digeser ke kanan menggunakan pengaturan kolom yang proporsional
-    col_l1, col_l2, col_l3 = st.columns([1.1, 1, 0.9])
+    # Logo Sekolah Rapi di Tengah
+    col_l1, col_l2, col_l3 = st.columns([1, 1.2, 1])
     with col_l2:
-        image_if_exists("Logo_MAN2.png", 150)
+        image_if_exists("Logo_MAN2.png", 180)
     
     hero_clean("Curhatin Digital MAN", "- Safe Space -")
     
-    # Layout responsif untuk maskot Temo dan panel sambutan
-    col_a, col_b = st.columns([1, 2.5])
+    # Layout Responsif Maskot Ikan & Panel Sambutan
+    col_a, col_b = st.columns([1, 2.3])
     with col_a:
         image_if_exists("kepiting_cowo.png", 160)
-        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:4px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:10px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
     with col_b:
         st.markdown("""
         <div class="panel" style="padding:22px;">
             <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">Halo Teman-teman MAN! 💙</h3>
-            <p class="muted" style="margin-bottom:0; font-size:1.02rem;">
+            <p class="muted" style="margin-bottom:0; font-size:1rem;">
                 Aku Temo, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
             </p>
         </div>
@@ -336,7 +372,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
 
     t1, t2, t3 = st.tabs(["💬 Tulis Curhat", "📅 Ajukan Jadwal", "🔎 Cek Status"])
     with t1:
-        st.markdown('<div class="panel" style="margin-bottom:10px;"><h3 style="color:#073b66;margin-bottom:0;">🛡️ Formulir Curhat Anonim (Bebas & Aman)</h3></div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel" style="margin-bottom:10px;"><h3 style="color:#073b66;margin-bottom:0;font-family:\'Fredoka\',sans-serif;">🛡️ Formulir Curhat Anonim (Bebas & Aman)</h3></div>', unsafe_allow_html=True)
         with st.form("report_form", clear_on_submit=True):
             category = st.selectbox("Kategori", ["Perundungan / bullying", "Stres belajar & tahfidz", "Keluarga atau masalah pribadi", "Konsultasi agama / moral", "Lainnya"])
             content = st.text_area("Ceritakan yang ingin disampaikan", height=150, placeholder="Tulis curhatanmu di sini...")
@@ -354,7 +390,12 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                                (code, now(), category, content.strip(), urgency, sc, "Baru", optional_email.strip() if use_email else "", "Belum diajukan", now()))
                     db.commit()
                 mail_bk(code, category, urgency)
-                st.success(f"Laporan tersimpan. Simpan kode laporanmu: {code}")
+                
+                # Efek Peluk / Cute Pop-up saat selesai kirim
+                st.balloons()
+                st.toast("Pesan terkirim! Temo memberikan pelukan hangat 🫂", icon="🐟")
+                hug_modal(code)
+
     with t2:
         st.markdown('<div class="panel"><h3>📅 Pengajuan Jadwal Tatap Muka</h3></div>', unsafe_allow_html=True)
         with st.form("schedule_form", clear_on_submit=True):
@@ -372,7 +413,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                     found = db.execute("SELECT code FROM reports WHERE code=?", (code_input.strip(),)).fetchone()
                     if found:
                         requested = f"{d.strftime('%d-%m-%Y')} pukul {tm.strftime('%H:%M')}"
-                        db.execute("UPDATE reports SET student_email=?,requested=?,schedule_status='Menunggu persetujuan',bk_note=?,updated=? WHERE code=?",
+                        db.execute("UPDATE reports sb SET student_email=?,requested=?,schedule_status='Menunggu persetujuan',bk_note=?,updated=? WHERE code=?",
                                    (student_email.strip(), requested, note.strip(), now(), code_input.strip()))
                         db.commit()
                 if found:
