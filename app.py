@@ -179,16 +179,15 @@ if room=="✨ Siswa (Curhat & Jadwal)":
     if (BASE / "Logo_MAN2.png").exists():
         st.image(str(BASE / "Logo_MAN2.png"), width=300)
     hero("Curhatin Digital")
-    a,b,c=st.columns([1,1.5,1])
-    with a:
-        image_if_exists("kepiting_cewe.png")
-        st.markdown("<div style='text-align:center;font-weight:700;color:#075985'>Kema · Sahabat bercerita</div>",unsafe_allow_html=True)
-    with b:
-        st.markdown('<div class="panel" style="text-align:center"><h3>Halo, Teman-teman MAN 2 Kudus! 💙</h3><p class="muted">Kamu boleh bercerita dengan nyaman. Guru BK akan meninjau laporanmu.</p></div>',unsafe_allow_html=True)
-        image_if_exists("ubur_cewe.png",120)
-    with c:
-        image_if_exists("kepiting_cowo.png")
-        st.markdown("<div style='text-align:center;font-weight:700;color:#075985'>Temo · Sahabatmu</div>",unsafe_allow_html=True)
+    
+    # Hanya menampilkan Temo saja di tengah/samping
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        image_if_exists("kepiting_cowo.png", 180)
+        st.markdown("<div style='font-weight:700;color:#075985'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown('<div class="panel"><h3>Halo, Teman-teman MAN 2 Kudus! 💙</h3><p class="muted">Kamu boleh bercerita dengan nyaman bersama Temo. Guru BK akan meninjau laporanmu.</p></div>',unsafe_allow_html=True)
+
     t1,t2,t3=st.tabs(["💬 Tulis Curhat","📅 Ajukan Jadwal","🔎 Cek Status"])
     with t1:
         st.markdown('<div class="panel"><h3>Formulir Pelaporan Anonim & Rahasia</h3></div>',unsafe_allow_html=True)
