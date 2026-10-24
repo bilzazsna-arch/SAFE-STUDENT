@@ -23,15 +23,10 @@ if bg_img_path.exists():
     bg_css = f"""
     .stApp {{
         background-image: url("data:image/jpg;base64,{bg_base64}");
-        background-size: 100% auto;
-        background-position: top center;
-        background-repeat: repeat;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         background-attachment: fixed;
-    }}
-    @media (max-width: 1200px) {{
-        .stApp {{
-            background-size: cover;
-        }}
     }}
     """
 else:
@@ -61,9 +56,9 @@ html, body, [class*="css"] {{
     padding-bottom: 2rem;
 }}
 
-/* Sidebar Styling */
+/* Sidebar Styling yang rapi untuk HP dan Laptop */
 [data-testid="stSidebar"] {{
-    background: linear-gradient(180deg, rgba(7,59,102,0.92) 0%, rgba(7,89,133,0.92) 58%, rgba(14,116,144,0.92) 100%);
+    background: linear-gradient(180deg, rgba(7,59,102,0.95) 0%, rgba(7,89,133,0.95) 58%, rgba(14,116,144,0.95) 100%);
     backdrop-filter: blur(8px);
     border-right: 1px solid rgba(255,255,255,0.15);
 }}
@@ -71,25 +66,34 @@ html, body, [class*="css"] {{
     color: white !important;
 }}
 
-/* Hero Banner Utama */
-.hero {{
-    background: linear-gradient(120deg, rgba(7,59,102,0.85) 0%, rgba(8,127,168,0.85) 60%, rgba(8,145,178,0.85) 100%);
-    backdrop-filter: blur(6px);
-    color: white;
-    border-radius: 26px;
-    padding: 24px 32px;
-    margin: 8px 0 20px 0;
-    box-shadow: 0 16px 36px rgba(6, 75, 108, 0.25);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+/* Judul Tanpa Kotak (Clean & Stylish) */
+.hero-clean {{
     text-align: center;
+    padding: 15px 10px;
+    margin-bottom: 15px;
 }}
-.hero h1 {{
+.hero-clean .eyebrow {{
+    font-size: 0.85rem;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    color: #e0f2fe;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    margin-bottom: 5px;
+}}
+.hero-clean h1 {{
     font-family: 'Fredoka', sans-serif;
-    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+    font-size: clamp(2.2rem, 5vw, 4.2rem);
     line-height: 1.1;
-    margin: 6px 0;
+    margin: 5px 0;
     color: #ffd45c;
-    text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0,0,0,0.3);
+}}
+.hero-clean p {{
+    color: #ffffff;
+    font-weight: 600;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    margin-bottom: 0;
 }}
 
 /* Panel & Card Styling */
@@ -122,7 +126,7 @@ html, body, [class*="css"] {{
     font-size: 0.95rem;
 }}
 
-/* Buttons & Forms */
+/* Buttons & Forms Responsif */
 div.stButton > button, div.stFormSubmitButton > button {{
     border: 0;
     border-radius: 14px;
@@ -298,25 +302,31 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Sampaikan cerita, temukan dukungan.")
 
-def hero(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
-    st.markdown(f'<div class="hero"><div style="font-size:0.85rem;letter-spacing:2px;font-weight:700;color:#baefff;margin-bottom:4px;">🌊 DIGITAL MAN · MAN 2 KUDUS</div><h1>{title}</h1><p style="font-weight:600;color:#ffd45c;font-size:1.1rem;margin-top:4px;">{subtitle}</p></div>', unsafe_allow_html=True)
+def hero_clean(title="Curhatin Digital MAN", subtitle="- Safe Space -"):
+    st.markdown(f'''
+    <div class="hero-clean">
+        <div class="eyebrow">🌊 DIGITAL MAN · MAN 2 KUDUS</div>
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+    </div>
+    ''', unsafe_allow_html=True)
 
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Logo MAN 2 Kudus persis di tengah dengan lebar 160px
-    col_l1, col_l2, col_l3 = st.columns([1.2, 1, 1.2])
+    # Logo digeser ke kanan menggunakan pengaturan kolom yang proporsional
+    col_l1, col_l2, col_l3 = st.columns([1.1, 1, 0.9])
     with col_l2:
-        image_if_exists("Logo_MAN2.png", 160)
+        image_if_exists("Logo_MAN2.png", 150)
     
-    hero("Curhatin Digital MAN", "- Safe Space -")
+    hero_clean("Curhatin Digital MAN", "- Safe Space -")
     
-    # Layout Maskot Temo di sebelah kiri dan Panel Sambutan di sebelah kanan
+    # Layout responsif untuk maskot Temo dan panel sambutan
     col_a, col_b = st.columns([1, 2.5])
     with col_a:
-        image_if_exists("kepiting_cowo.png", 170)
-        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.5);margin-top:4px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
+        image_if_exists("kepiting_cowo.png", 160)
+        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:4px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
     with col_b:
         st.markdown("""
-        <div class="panel" style="padding:24px;">
+        <div class="panel" style="padding:22px;">
             <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">Halo Teman-teman MAN! 💙</h3>
             <p class="muted" style="margin-bottom:0; font-size:1.02rem;">
                 Aku Temo, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
@@ -386,7 +396,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                 st.warning("Kode laporan tidak ditemukan.")
 
 elif room == "🧑‍🏫 Guru BK":
-    hero("Dashboard Guru BK", "Kelola laporan, tindak lanjut, dan persetujuan jadwal.")
+    hero_clean("Dashboard Guru BK", "Kelola laporan, tindak lanjut, dan persetujuan jadwal.")
     with st.expander("🔐 Masuk ke dashboard Guru BK", expanded=not st.session_state.get("bk_auth", False)):
         pw = st.text_input("Kata sandi Guru BK", type="password", key="bk_pw")
         if st.button("Masuk Guru BK"):
@@ -447,11 +457,11 @@ elif room == "🧑‍🏫 Guru BK":
             st.rerun()
 
 elif room == "👨‍👩‍👧 Orang Tua":
-    hero("Ruang Orang Tua", "Informasi umum mengenai layanan konseling.")
+    hero_clean("Ruang Orang Tua", "Informasi umum mengenai layanan konseling.")
     st.markdown('<div class="panel"><h3>Pendampingan Siswa</h3><p class="muted">Hubungi Guru BK jika siswa membutuhkan dukungan lebih lanjut.</p></div>', unsafe_allow_html=True)
 
 else:
-    hero("Admin SAFE-STUDENT", "Konfigurasi dan Status Sistem.")
+    hero_clean("Admin SAFE-STUDENT", "Konfigurasi dan Status Sistem.")
     with st.expander("🔐 Masuk Admin", expanded=not st.session_state.get("admin_auth", False)):
         pw = st.text_input("Kata sandi Admin", type="password", key="admin_pw")
         if st.button("Masuk Admin"):
