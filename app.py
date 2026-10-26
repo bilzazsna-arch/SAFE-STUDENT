@@ -78,6 +78,17 @@ html, body, [class*="css"] {{
     object-fit: contain;
 }}
 
+/* Posisi Maskot Benar-benar di Tengah */
+.mascot-center-container {{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+}}
+
 /* Sidebar Styling */
 [data-testid="stSidebar"] {{
     background: linear-gradient(180deg, rgba(7,59,102,0.95) 0%, rgba(7,89,133,0.95) 58%, rgba(14,116,144,0.95) 100%);
@@ -194,7 +205,7 @@ div[data-testid="stForm"] {{
     margin: 0 auto;
 }}
 
-/* Penyesuaian Khusus HP Agar Tata Letak Rapi di Tengah */
+/* Penyesuaian Khusus HP */
 @media (max-width: 768px) {{
     .block-container {{
         padding-left: 0.8rem !important;
@@ -203,12 +214,6 @@ div[data-testid="stForm"] {{
     .panel {{
         padding: 16px !important;
         border-radius: 18px !important;
-    }}
-    [data-testid="stColumn"] {{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
     }}
 }}
 </style>
@@ -407,11 +412,14 @@ if room == "✨ Siswa (Curhat & Jadwal)":
     
     hero_clean("SAFE STUDENT MAN 2 KUDUS", "- Safe Space -")
     
-    # Tata Letak Atas-Bawah (Temo di atas, Panel Sambutan di bawahnya agar persis di tengah)
+    # Maskot Temo dan Panel Sambutan di Atas-Bawah agar Pas di Tengah
+    st.markdown('<div class="mascot-center-container">', unsafe_allow_html=True)
+    image_if_exists("kepiting_cowo.png", 170)
+    st.markdown("<div style='font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:12px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
     col_center = st.columns([1, 4, 1])
     with col_center[1]:
-        image_if_exists("kepiting_cowo.png", 170)
-        st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:12px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
         st.markdown("""
         <div class="panel" style="padding:22px; text-align:center;">
             <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">SUGENG RAWUH RENCANG-RENCANG MAN 💙</h3>
@@ -425,7 +433,14 @@ if room == "✨ Siswa (Curhat & Jadwal)":
     with t1:
         st.markdown('<div class="panel" style="margin-bottom:10px;"><h3 style="color:#073b66;margin-bottom:0;font-family:\'Fredoka\',sans-serif;">🛡️ Formulir Curhat Anonim (Bebas & Aman)</h3></div>', unsafe_allow_html=True)
         with st.form("report_form", clear_on_submit=True):
-            category = st.selectbox("Kategori", ["Perundungan / bullying", "Stres belajar & tahfidz", "Keluarga atau masalah pribadi", "Konsultasi agama / moral", "Lainnya"])
+            category = st.selectbox("Kategori", [
+                "Perundungan / bullying", 
+                "Stres belajar & tugas menumpuk", 
+                "Kebijakan sekolah & aturan guru", 
+                "Sikap / perilaku guru yang kurang pas", 
+                "Keluarga atau masalah pribadi", 
+                "Lainnya"
+            ])
             content = st.text_area("Ceritakan yang ingin disampaikan", height=150, placeholder="Tulis curhatanmu di sini...")
             optional_email = st.text_input("Email aktif untuk konfirmasi jadwal (opsional)", placeholder="contoh@email.com")
             use_email = st.checkbox("Saya ingin menggunakan email ini untuk konfirmasi jadwal & menerima kode laporan.")
