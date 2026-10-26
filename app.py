@@ -78,15 +78,14 @@ html, body, [class*="css"] {{
     object-fit: contain;
 }}
 
-/* Posisi Maskot Benar-benar di Tengah */
-.mascot-center-container {{
+/* Posisi Maskot Ganda di Tengah */
+.mascot-double-container {{
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    gap: 20px;
     width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }}
 
 /* Sidebar Styling */
@@ -205,7 +204,6 @@ div[data-testid="stForm"] {{
     margin: 0 auto;
 }}
 
-/* Penyesuaian Khusus HP */
 @media (max-width: 768px) {{
     .block-container {{
         padding-left: 0.8rem !important;
@@ -311,7 +309,7 @@ SAFE-STUDENT MAN 2 Kudus"""
 def mail_student_code(to, code, category):
     body = f"""Halo Rencang-rencang MAN 2 Kudus,
 
-Terima kasih sudah menggunakan layanan SAFE-STUDENT. Curhatanmu telah diterima dengan aman dan anonim oleh Temo dan Guru BK.
+Terima kasih sudah menggunakan layanan SAFE-STUDENT. Curhatanmu telah diterima dengan aman dan anonim oleh Temo & Tima dan Guru BK.
 
 Berikut adalah Kode Laporan kamu:
 🔑 {code}
@@ -320,7 +318,7 @@ Kategori: {category}
 Simpan kode ini untuk mengecek status laporan atau mengajukan jadwal konseling di aplikasi SAFE-STUDENT.
 
 Salam hangat,
-Temo & Tim BK MAN 2 Kudus"""
+Temo, Tima & Tim BK MAN 2 Kudus"""
     return email(to, f"[SAFE-STUDENT] Kode Laporan Kamu - {code}", body, "Kirim kode laporan ke siswa", code)
 
 def mail_student(to, code, schedule, note=""):
@@ -365,7 +363,7 @@ def image_if_exists(name, width=None):
 with st.sidebar:
     st.markdown("## 🐟 SAFE-STUDENT")
     st.caption("Layanan Pelaporan & Konseling Digital MAN 2 Kudus")
-    room = st.radio("Pilih Ruang Akses", ["✨ Siswa (Curhat & Jadwal)", "🧑‍🏫 Guru BK", "👨‍👩‍👧 Orang Tua", "🔐 Admin"])
+    room = st.radio("Pilih Ruang Akses", ["✨ Siswa (Curhat & Jadwal)", "🧑‍🏫 Guru BK", "🔐 Admin"])
     st.markdown("---")
     st.caption("Sampaikan cerita, temukan dukungan.")
 
@@ -378,20 +376,26 @@ def hero_clean(title="SAFE STUDENT MAN 2 KUDUS", subtitle="- Safe Space -"):
     </div>
     ''', unsafe_allow_html=True)
 
-# Dialog / Pop-up Hug Cute dari Temo
-@st.dialog("🫂 Pelukan Hangat dari Temo! 🐟")
+# Dialog / Pop-up Hug Cute dari Maskot
+@st.dialog("🫂 Pelukan Hangat dari Temo & Tima! 🐟")
 def hug_modal(code, student_email):
     st.markdown(f"""
     <div style="text-align: center; padding: 10px;">
         <h2 style="color: #0284c7; font-family: 'Bubblegum Sans', cursive; font-size: 2rem; margin-bottom: 8px;">
-            Temo Mengirimkan Pelukan! 🫂💙
+            Temo & Tima Mengirimkan Pelukan! 🫂💙
         </h2>
         <p style="color: #334155; font-size: 1.05rem;">
-            Terima kasih sudah berani bercerita. Kamu luar biasa! Temo dan Guru BK akan menjaga kerahasiaan ceritamu.
+            Terima kasih sudah berani bercerita. Kamu luar biasa! Kami dan Guru BK akan menjaga kerahasiaan ceritamu.
         </p>
     </div>
     """, unsafe_allow_html=True)
-    image_if_exists("kepiting_cowo.png", 180)
+    
+    col_d1, col_d2 = st.columns(2)
+    with col_d1:
+        image_if_exists("paus_cowo.png", 140)
+    with col_d2:
+        image_if_exists("paus_cewe.png", 140)
+        
     st.info(f"🔑 **Kode Laporan Kamu:** `{code}`")
     if student_email.strip():
         st.success(f"📧 Kode laporan juga telah dikirim secara otomatis ke email: **{student_email.strip()}**")
@@ -400,7 +404,6 @@ def hug_modal(code, student_email):
     st.caption("Gunakan kode ini di tab 'Cek Status' untuk melihat perkembangan laporan atau jadwalmu.")
 
 if room == "✨ Siswa (Curhat & Jadwal)":
-    # Logo Sekolah Benar-benar di Tengah
     logo_path = BASE / "Logo_MAN2.png"
     if logo_path.exists():
         logo_b64 = get_base64_of_bin_file(logo_path)
@@ -412,11 +415,15 @@ if room == "✨ Siswa (Curhat & Jadwal)":
     
     hero_clean("SAFE STUDENT MAN 2 KUDUS", "- Safe Space -")
     
-    # Maskot Temo dan Panel Sambutan di Atas-Bawah agar Pas di Tengah
-    st.markdown('<div class="mascot-center-container">', unsafe_allow_html=True)
-    image_if_exists("kepiting_cowo.png", 170)
-    st.markdown("<div style='font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:12px;'>Temo · Sahabatmu</div>", unsafe_allow_html=True)
+    # Dua Maskot (paus_cowo.png & paus_cewe.png) di Tengah Atas
+    st.markdown('<div class="mascot-double-container">', unsafe_allow_html=True)
+    col_m1, col_m2 = st.columns(2)
+    with col_m1:
+        image_if_exists("paus_cowo.png", 130)
+    with col_m2:
+        image_if_exists("paus_cewe.png", 130)
     st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 2px 4px rgba(0,0,0,0.6);margin-top:2px;margin-bottom:12px;'>Temo & Tima · Sahabat Setia</div>", unsafe_allow_html=True)
 
     col_center = st.columns([1, 4, 1])
     with col_center[1]:
@@ -424,7 +431,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
         <div class="panel" style="padding:22px; text-align:center;">
             <h3 style="margin-bottom:6px;color:#073b66;font-family:'Fredoka',sans-serif;">SUGENG RAWUH RENCANG-RENCANG MAN 💙</h3>
             <p class="muted" style="margin-bottom:0; font-size:1rem;">
-                Aku Temo, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
+                Kami Temo & Tima, penjaga kerahasiaan curhatmu. Apapun masalahmu di sekolah, curhatkan di sini dengan aman dan anonim!
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -458,16 +465,12 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                                (code, now(), category, content.strip(), urgency, sc, "Baru", student_mail_target, "Belum diajukan", now()))
                     db.commit()
                 
-                # Kirim notifikasi ke Guru BK
                 mail_bk(code, category, urgency)
-                
-                # Kirim kode laporan otomatis ke email siswa jika dicentang/diisi
                 if student_mail_target:
                     mail_student_code(student_mail_target, code, category)
                 
-                # Efek Peluk / Cute Pop-up saat selesai kirim
                 st.balloons()
-                st.toast("Pesan terkirim! Temo memberikan pelukan hangat 🫂", icon="🐟")
+                st.toast("Pesan terkirim! Temo & Tima memberikan pelukan hangat 🫂", icon="🐟")
                 hug_modal(code, student_mail_target)
 
     with t2:
@@ -486,115 +489,4 @@ if room == "✨ Siswa (Curhat & Jadwal)":
                 with connect() as db:
                     found = db.execute("SELECT code FROM reports WHERE code=?", (code_input.strip(),)).fetchone()
                     if found:
-                        requested = f"{d.strftime('%d-%m-%Y')} pukul {tm.strftime('%H:%M')}"
-                        db.execute("UPDATE reports SET student_email=?,requested=?,schedule_status='Menunggu persetujuan',bk_note=?,updated=? WHERE code=?",
-                                   (student_email.strip(), requested, note.strip(), now(), code_input.strip()))
-                        db.commit()
-                if found:
-                    st.success("Pengajuan tersimpan. Tunggu konfirmasi melalui email.")
-                else: 
-                    st.error("Kode laporan tidak ditemukan.")
-    with t3:
-        st.markdown('<div class="panel"><h3>🔎 Cek Status Laporan & Jadwal</h3></div>', unsafe_allow_html=True)
-        check_code = st.text_input("Kode laporan untuk dicek", key="check_code")
-        if st.button("Cek Status"):
-            with connect() as db: 
-                r = db.execute("SELECT code,status,requested,final_schedule,schedule_status FROM reports WHERE code=?", (check_code.strip(),)).fetchone()
-            if r:
-                st.write("**Status laporan:**", r["status"])
-                st.write("**Status jadwal:**", r["schedule_status"])
-                if r["requested"]: 
-                    st.write("**Waktu diajukan:**", r["requested"])
-                if r["final_schedule"]: 
-                    st.write("**Jadwal final:**", r["final_schedule"])
-            else: 
-                st.warning("Kode laporan tidak ditemukan.")
-
-elif room == "🧑‍🏫 Guru BK":
-    hero_clean("Dashboard Guru BK", "Kelola laporan, tindak lanjut, dan persetujuan jadwal.")
-    with st.expander("🔐 Masuk ke dashboard Guru BK", expanded=not st.session_state.get("bk_auth", False)):
-        pw = st.text_input("Kata sandi Guru BK", type="password", key="bk_pw")
-        if st.button("Masuk Guru BK"):
-            try: 
-                expected = st.secrets.get("auth", {}).get("bk_password", "")
-            except Exception: 
-                expected = ""
-            if expected and secrets.compare_digest(pw, expected):
-                st.session_state["bk_auth"] = True
-                st.rerun()
-            else: 
-                st.error("Kata sandi salah atau belum diatur di secrets.toml.")
-    if st.session_state.get("bk_auth"):
-        df = reports()
-        n = len(df)
-        cols = st.columns(4)
-        for col, label, val in zip(cols, ["Total laporan", "Laporan baru", "Jadwal menunggu", "Jadwal disetujui"],
-                                  [n, int((df.status == "Baru").sum()) if n else 0, int((df.schedule_status == "Menunggu persetujuan").sum()) if n else 0, int((df.schedule_status == "Disetujui").sum()) if n else 0]):
-            with col: 
-                st.markdown(f'<div class="metric"><div>{label}</div><div class="num">{val}</div></div>', unsafe_allow_html=True)
-        t1, t2, t3 = st.tabs(["📥 Laporan masuk", "📅 Persetujuan jadwal", "✉️ Riwayat email"])
-        with t1:
-            if n:
-                selected_code = st.selectbox("Pilih laporan", df.code.tolist())
-                r = df[df.code == selected_code].iloc[0]
-                st.write("**Isi laporan:**")
-                st.write(r.content)
-                with st.form("update_report"):
-                    status = st.selectbox("Status", ["Baru", "Diproses", "Selesai"], index=["Baru", "Diproses", "Selesai"].index(r.status))
-                    bk_note = st.text_area("Catatan internal BK", value=r.bk_note or "")
-                    if st.form_submit_button("Simpan"):
-                        update(selected_code, status=status, bk_note=bk_note)
-                        st.success("Tersimpan!")
-                        st.rerun()
-        with t2:
-            waiting = df[df.schedule_status == "Menunggu persetujuan"] if n else pd.DataFrame()
-            if len(waiting):
-                sel_w = st.selectbox("Pilih pengajuan", waiting.code.tolist(), key="sel_w")
-                rw = df[df.code == sel_w].iloc[0]
-                with st.form("appr"):
-                    dec = st.radio("Keputusan", ["Setujui", "Tolak"])
-                    if st.form_submit_button("Proses"):
-                        if dec == "Setujui":
-                            update(sel_w, schedule_status="Disetujui")
-                            if rw.student_email: 
-                                mail_student(rw.student_email, sel_w, rw.requested)
-                        else:
-                            update(sel_w, schedule_status="Ditolak")
-                        st.success("Berhasil diproses!")
-                        st.rerun()
-        with t3:
-            with connect() as db: 
-                logs = pd.read_sql_query("SELECT created,recipient,subject,event,code,status FROM email_log ORDER BY id DESC LIMIT 100", db)
-            if len(logs): 
-                st.dataframe(logs, use_container_width=True, hide_index=True)
-        if st.button("Keluar"): 
-            st.session_state["bk_auth"] = False
-            st.rerun()
-
-elif room == "👨‍👩‍👧 Orang Tua":
-    hero_clean("Ruang Orang Tua", "Informasi umum mengenai layanan konseling.")
-    st.markdown('<div class="panel"><h3>Pendampingan Siswa</h3><p class="muted">Hubungi Guru BK jika siswa membutuhkan dukungan lebih lanjut.</p></div>', unsafe_allow_html=True)
-
-else:
-    hero_clean("Admin SAFE-STUDENT", "Konfigurasi dan Status Sistem.")
-    with st.expander("🔐 Masuk Admin", expanded=not st.session_state.get("admin_auth", False)):
-        pw = st.text_input("Kata sandi Admin", type="password", key="admin_pw")
-        if st.button("Masuk Admin"):
-            try: 
-                expected = st.secrets.get("auth", {}).get("admin_password", "")
-            except Exception: 
-                expected = ""
-            if expected and secrets.compare_digest(pw, expected): 
-                st.session_state["admin_auth"] = True
-                st.rerun()
-            else: 
-                st.error("Kata sandi salah.")
-    if st.session_state.get("admin_auth"):
-        conf = cfg()
-        st.write("Pengirim:", conf["sender"])
-        st.write("Penerima:", conf["recipient"])
-        if st.button("Keluar Admin"): 
-            st.session_state["admin_auth"] = False
-            st.rerun()
-
-st.markdown('<p style="text-align:center;color:#ffffff;text-shadow: 0 1px 3px rgba(0,0,0,0.6);font-weight:600;font-size:.85rem;padding:20px">SAFE-STUDENT · MAN 2 Kudus · Sampaikan cerita, temukan dukungan.</p>', unsafe_allow_html=True)
+                        requested = f"{d.strftime('%d-%
