@@ -1,8 +1,3 @@
-Error tersebut terjadi karena di dalam blok `st.markdown(f""" ... """)` terdapat penggunaan kurung kurawal ganda atau kurung kurawal tunggal yang tidak seimbang di bagian CSS, sehingga Python menganggap f-string belum ditutup (unterminated).
-
-Berikut adalah perbaikan kode lengkap **`app.py`** dengan memperbaiki penulisan f-string CSS agar bebas dari *SyntaxError*:
-
-```python
 import os, sqlite3, smtplib, ssl, secrets, base64
 from datetime import datetime, date, time
 from email.message import EmailMessage
@@ -645,5 +640,3 @@ else:
             st.rerun()
 
 st.markdown('<p style="text-align:center;color:#ffffff;text-shadow: 0 1px 3px rgba(0,0,0,0.6);font-weight:600;font-size:.85rem;padding:20px">SAFE-STUDENT · MAN 2 Kudus · Sampaikan cerita, temukan dukungan.</p>', unsafe_allow_html=True)
-
-```
