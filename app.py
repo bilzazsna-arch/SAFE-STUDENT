@@ -43,79 +43,87 @@ else:
     }
     """
 
-st.markdown(f"""
+st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
-{bg_css}
-
-html, body, [class*="css"] {{
+html, body, [class*="css"] {
     font-family: 'Poppins', sans-serif;
-}}
+}
 
-[data-testid="stHeader"] {{
+[data-testid="stHeader"] {
     background: transparent;
-}}
+}
 
-.block-container {{
+.block-container {
     max-width: 1380px;
     padding-top: 1rem;
     padding-bottom: 2rem;
-}}
+}
 
 /* Posisi Logo Benar-benar di Tengah */
-.logo-center-wrapper {{
+.logo-center-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     margin-bottom: 10px;
-}}
-.logo-center-wrapper img {{
+}
+.logo-center-wrapper img {
     max-width: 210px !important;
     height: auto !important;
     object-fit: contain;
-}}
+}
 
 /* Posisi Maskot Ganda di Tengah */
-.mascot-double-container {{
+.mascot-double-container {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
     width: 100%;
     margin-bottom: 5px;
-}}
+}
 
 /* Sidebar Styling */
-[data-testid="stSidebar"] {{
+[data-testid="stSidebar"] {
     background: linear-gradient(180deg, rgba(7,59,102,0.95) 0%, rgba(7,89,133,0.95) 58%, rgba(14,116,144,0.95) 100%);
     backdrop-filter: blur(10px);
     border-right: 1px solid rgba(255,255,255,0.2);
-}}
-[data-testid="stSidebar"] * {{
+}
+[data-testid="stSidebar"] * {
     color: white !important;
-}}
+}
 
 /* Header Judul Eye-Catching Font Cantik */
-.hero-clean {{
+.hero-clean {
     text-align: center;
     padding: 10px 5px;
     margin-bottom: 12px;
-}}
-.hero-clean .eyebrow {{
+}
+.hero-clean .eyebrow {
     font-family: 'Bubblegum Sans', cursive;
     font-size: clamp(1rem, 2.8vw, 1.3rem);
     letter-spacing: 2px;
     color: #e0f2fe;
     text-shadow: 0 2px 5px rgba(0,0,0,0.5);
     margin-bottom: 2px;
-}}
-.hero-clean h1 {{
+}
+.hero-clean h1 {
     font-family: 'Pacifico', cursive, sans-serif;
     font-size: clamp(2rem, 5vw, 3.8rem);
     line-height: 1.2;
     margin: 6px 0;
     color: #ffd45c;
-    text-shadow: 0 4px 12px rgba(0,
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(7,59,102,0.9);
+}
+.hero-clean p {
+    font-family: 'Bubblegum Sans', cursive;
+    color: #ffffff;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    margin-bottom: 0;
+}
+
+/* Panel & Card Styling */
