@@ -43,91 +43,93 @@ else:
     }
     """
 
-st.markdown("""
+st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
-html, body, [class*="css"] {
+{bg_css}
+
+html, body, [class*="css"] {{
     font-family: 'Poppins', sans-serif;
-}
+}}
 
-[data-testid="stHeader"] {
+[data-testid="stHeader"] {{
     background: transparent;
-}
+}}
 
-.block-container {
+.block-container {{
     max-width: 1380px;
     padding-top: 1rem;
     padding-bottom: 2rem;
-}
+}}
 
 /* Posisi Logo Benar-benar di Tengah */
-.logo-center-wrapper {
+.logo-center-wrapper {{
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     margin-bottom: 10px;
-}
-.logo-center-wrapper img {
+}}
+.logo-center-wrapper img {{
     max-width: 210px !important;
     height: auto !important;
     object-fit: contain;
-}
+}}
 
 /* Posisi Maskot Ganda di Tengah */
-.mascot-double-container {
+.mascot-double-container {{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
     width: 100%;
     margin-bottom: 5px;
-}
+}}
 
 /* Sidebar Styling */
-[data-testid="stSidebar"] {
+[data-testid="stSidebar"] {{
     background: linear-gradient(180deg, rgba(7,59,102,0.95) 0%, rgba(7,89,133,0.95) 58%, rgba(14,116,144,0.95) 100%);
     backdrop-filter: blur(10px);
     border-right: 1px solid rgba(255,255,255,0.2);
-}
-[data-testid="stSidebar"] * {
+}}
+[data-testid="stSidebar"] * {{
     color: white !important;
-}
+}}
 
 /* Header Judul Eye-Catching Font Cantik */
-.hero-clean {
+.hero-clean {{
     text-align: center;
     padding: 10px 5px;
     margin-bottom: 12px;
-}
-.hero-clean .eyebrow {
+}}
+.hero-clean .eyebrow {{
     font-family: 'Bubblegum Sans', cursive;
     font-size: clamp(1rem, 2.8vw, 1.3rem);
     letter-spacing: 2px;
     color: #e0f2fe;
     text-shadow: 0 2px 5px rgba(0,0,0,0.5);
     margin-bottom: 2px;
-}
-.hero-clean h1 {
+}}
+.hero-clean h1 {{
     font-family: 'Pacifico', cursive, sans-serif;
     font-size: clamp(2rem, 5vw, 3.8rem);
     line-height: 1.2;
     margin: 6px 0;
     color: #ffd45c;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(7,59,102,0.9);
-}
-.hero-clean p {
+}}
+.hero-clean p {{
     font-family: 'Bubblegum Sans', cursive;
     color: #ffffff;
     font-size: clamp(1.1rem, 3vw, 1.5rem);
     text-shadow: 0 2px 6px rgba(0,0,0,0.6);
     margin-bottom: 0;
-}
+}}
 
 /* Panel & Card Styling */
-.panel {
+.panel {{
     background: rgba(255, 255, 255, 0.94);
     backdrop-filter: blur(10px);
     border: 1.5px solid #bae6fd;
@@ -135,29 +137,29 @@ html, body, [class*="css"] {
     padding: 22px;
     margin-bottom: 16px;
     box-shadow: 0 10px 28px rgba(8, 59, 102, 0.18);
-}
+}}
 
-.metric {
+.metric {{
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid #bae6fd;
     border-radius: 18px;
     padding: 18px;
     box-shadow: 0 6px 20px rgba(8, 59, 102, 0.1);
-}
-.metric .num {
+}}
+.metric .num {{
     font-family: 'Fredoka', sans-serif;
     font-size: 2rem;
     font-weight: 700;
     color: #0284c7;
-}
+}}
 
-.muted {
+.muted {{
     color: #334155;
     font-size: 0.95rem;
-}
+}}
 
 /* Button & Form */
-div.stButton > button, div.stFormSubmitButton > button {
+div.stButton > button, div.stFormSubmitButton > button {{
     border: 0;
     border-radius: 14px;
     background: linear-gradient(90deg, #0284c7, #0891b2);
@@ -167,55 +169,51 @@ div.stButton > button, div.stFormSubmitButton > button {
     box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
     transition: transform 0.15s ease;
     width: 100%;
-}
-div.stButton > button:hover, div.stFormSubmitButton > button:hover {
+}}
+div.stButton > button:hover, div.stFormSubmitButton > button:hover {{
     color: white;
     transform: translateY(-2px);
-}
+}}
 
-div[data-testid="stForm"] {
+div[data-testid="stForm"] {{
     background: rgba(255, 255, 255, 0.95);
     border: 1.5px solid #bae6fd;
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 8px 24px rgba(8, 59, 102, 0.15);
-}
+}}
 
-[data-testid="stTabs"] button {
+[data-testid="stTabs"] button {{
     font-weight: 700;
     font-size: 1rem;
-}
+}}
 
-[data-testid="stDataFrame"] {
+[data-testid="stDataFrame"] {{
     border-radius: 16px;
     overflow: hidden;
-}
+}}
 
-[data-testid="stImage"] {
+[data-testid="stImage"] {{
     display: flex;
     justify-content: center;
     align-items: center;
-}
+}}
 
-[data-testid="stImage"] img {
+[data-testid="stImage"] img {{
     object-fit: contain;
     margin: 0 auto;
-}
+}}
 
-@media (max-width: 768px) {
-    .block-container {
+@media (max-width: 768px) {{
+    .block-container {{
         padding-left: 0.8rem !important;
         padding-right: 0.8rem !important;
-    }
-    .panel {
+    }}
+    .panel {{
         padding: 16px !important;
         border-radius: 18px !important;
-    }
-}
-</style>
-""" + f"""
-<style>
-{bg_css}
+    }}
+}}
 </style>
 """, unsafe_allow_html=True)
 
