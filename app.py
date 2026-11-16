@@ -76,7 +76,7 @@ html, body, [class*="css"] {
     object-fit: contain;
 }
 
-/* Posisi Maskot Tunggal di Tengah */
+/* Posisi Maskot Tunggal Benar-benar di Tengah */
 .mascot-center-container {
     display: flex;
     flex-direction: column;
@@ -85,6 +85,11 @@ html, body, [class*="css"] {
     width: 100%;
     text-align: center;
     margin-bottom: 12px;
+}
+.mascot-center-container img {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 /* Sidebar Styling */
@@ -417,7 +422,9 @@ def hug_modal(code, student_email):
     </div>
     """, unsafe_allow_html=True)
     
+    st.markdown('<div class="mascot-center-container">', unsafe_allow_html=True)
     image_if_exists("maskot.png", 160)
+    st.markdown('</div>', unsafe_allow_html=True)
         
     st.info(f"🔑 **Kode Laporan Kamu:** `{code}`")
     if student_email.strip():
@@ -542,7 +549,7 @@ if room == "✨ Siswa (Curhat & Jadwal)":
         
         st.markdown("#### 🌟 Ambil Kartu Afirmasi Positifmu Hari Ini")
         affirmations = [
-            "✨ \"Aku berharga, kuat, dan mampu melewati segala tantangan belajar hari ini!\"",
+            "✨ \"Aku berharga, kuat, and mampu melewati segala tantangan belajar hari ini!\"",
             "💙 \"Kesalahan adalah bagian dari proses belajar. Aku terus bertumbuh menjadi lebih baik.\"",
             "🌊 \"Pikiran jernih dan ketenangan jiwa ada di dalam diriku. Aku aman dan dilindungi.\"",
             "⭐ \"Hari ini aku memilih untuk berbuat baik pada diriku sendiri dan orang lain.\"",
