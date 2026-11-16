@@ -77,19 +77,17 @@ html, body, [class*="css"] {
 }
 
 /* Posisi Maskot Tunggal Benar-benar di Tengah */
-.mascot-center-container {
+.mascot-center-wrapper {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     width: 100%;
-    text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
 }
-.mascot-center-container img {
-    display: block !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+.mascot-center-wrapper img {
+    max-width: 160px !important;
+    height: auto !important;
+    object-fit: contain;
 }
 
 /* Sidebar Styling */
@@ -387,11 +385,6 @@ def update(code, **kw):
                   list(vals.values()) + [code])
         c.commit()
 
-def image_if_exists(name, width=None):
-    p = BASE / name
-    if p.exists(): 
-        st.image(str(p), width=width, use_container_width=(width is None))
-
 with st.sidebar:
     st.markdown("## 🐟 SAFE-STUDENT")
     st.caption("Layanan Pelaporan & Konseling Digital MAN 2 Kudus")
@@ -422,9 +415,10 @@ def hug_modal(code, student_email):
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<div class="mascot-center-container">', unsafe_allow_html=True)
-    image_if_exists("maskot.png", 160)
-    st.markdown('</div>', unsafe_allow_html=True)
+    mascot_path = BASE / "maskot.png"
+    if mascot_path.exists():
+        mascot_b64 = get_base64_of_bin_file(mascot_path)
+        st.markdown(f'<div class="mascot-center-wrapper"><img src="data:image/png;base64,{mascot_b64}" alt="Maskot Temo"></div>', unsafe_allow_html=True)
         
     st.info(f"🔑 **Kode Laporan Kamu:** `{code}`")
     if student_email.strip():
@@ -441,11 +435,18 @@ if room == "✨ Siswa (Curhat & Jadwal)":
     
     hero_clean("SAFE STUDENT MAN 2 KUDUS", "- Safe Space -")
     
-    # Maskot Tunggal ("maskot.png") di Tengah Atas (Dibawah Nama Safe Student)
-    st.markdown('<div class="mascot-center-container">', unsafe_allow_html=True)
-    image_if_exists("maskot.png", 160)
-    st.markdown("<div style='text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 0 8px #0284c7, 0 2px 4px rgba(0,0,0,0.8);margin-top:4px;margin-bottom:12px;font-size:1.15rem;'>Temo · Sahabat Setia</div>", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Maskot Tunggal ("maskot.png") di Tengah Atas Menggunakan Base64 HTML & CSS Flexbox
+    mascot_path = BASE / "maskot.png"
+    if mascot_path.exists():
+        mascot_b64 = get_base64_of_bin_file(mascot_path)
+        st.markdown(f'''
+        <div class="mascot-center-wrapper">
+            <img src="data:image/png;base64,{mascot_b64}" alt="Maskot Temo">
+        </div>
+        <div style="text-align:center;font-weight:700;color:#ffffff;text-shadow: 0 0 8px #0284c7, 0 2px 4px rgba(0,0,0,0.8);margin-top:4px;margin-bottom:12px;font-size:1.15rem;">
+            Temo · Sahabat Setia
+        </div>
+        ''', unsafe_allow_html=True)
 
     col_center = st.columns([1, 4, 1])
     with col_center[1]:
